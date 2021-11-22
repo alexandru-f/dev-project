@@ -1,0 +1,17 @@
+.add-button {
+    cursor: pointer;
+}
+
+.modal {
+    transition: all 0.25s ease;
+}
+
+.modal-active {
+    overflow-x: hidden;
+    overflow-y: visible !important;
+}
+
+div.subscription-modal {
+    position: absolute;
+    height: 100vh;
+}

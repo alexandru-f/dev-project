@@ -1,0 +1,2 @@
+spring.application.name: categories-service
+server.port: 8081
