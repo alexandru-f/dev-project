@@ -15,3 +15,30 @@ div.subscription-modal {
     position: absolute;
     height: 100vh;
 }
+
+.autocomplete-container {
+    position: relative;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    top: 105%;
+    left: 0;
+    right: 0;
+    background: #fff;
+}
+
+.autocomplete-items>div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.autocomplete-items div:hover {
+    background-color: rgba(248, 250, 252, var(--tw-bg-opacity));
+}

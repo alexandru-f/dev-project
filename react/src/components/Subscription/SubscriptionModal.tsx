@@ -23,12 +23,11 @@ const SubscriptionModal:React.FC<Props> = ({show, handleClose}) => {
 
   return (
     <> 
-  <div className={
-    (show ? "block " : "hidden ") +
-    "modal opacity-0 fixed w-full h-full top-0 left-0 flex items-center z-10 justify-center subscription-modal"
-  }
-  
-  >
+    <div className={
+      (show ? "block " : "hidden ") +
+      "modal opacity-0 fixed w-full h-full top-0 left-0 flex items-center z-10 justify-center subscription-modal"
+    }
+    >
     <div className="modal-overlay absolute w-full h-full bg-blueGray-800 opacity-50"></div>
     
     <div className="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto w-fullw-full lg:w-4/12 px-4  bg-blueGray-100">

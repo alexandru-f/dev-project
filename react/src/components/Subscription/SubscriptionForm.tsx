@@ -1,8 +1,41 @@
-import React from "react";
+import axios from "axios";
+import { userInfo } from "os";
+import React, {useEffect, useState} from "react";
+import { useResolvedPath } from "react-router";
 
 // components
 
 const SubscriptionForm = () => {
+
+  const [subscriptionNames, setSubscriptionNames] = useState<[]>([]);
+  const [subscriptionInputText, setSubscriptionInputText] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  useEffect(() => {
+    const getSubscriptionsName = async () => {
+      try {
+        const response = await axios.get('http://localhost:8081/api/subscription/search/name');
+        setSubscriptionNames(response.data.names);
+      } catch (err) {
+        console.log('new error: unable to get');
+      }
+    }
+    getSubscriptionsName();
+  }, []);
+
+  const onChangeHandler = (inputText:string) => {
+    let matches: string[] = [];
+    if (inputText.length > 0) {
+      matches = subscriptionNames.filter((subscriptionName: string) => {
+          const regex = new RegExp(`${inputText}`, 'gi');
+          return subscriptionName.match(regex);
+      });
+    }
+    setSuggestions(matches);
+    setSubscriptionInputText(inputText);
+  }
+  const onSuggestHandler = (inputText:string) => {
+    setSubscriptionInputText(inputText);
+  }
   return (
      <>
         <div className="flex content-center items-center justify-center h-full">
@@ -23,11 +56,31 @@ const SubscriptionForm = () => {
                     >
                       Subscription Name
                     </label>
-                    <input
-                      type="email"
+                    <div className="relative flex w-full flex-wrap items-stretch autocomplete-container"><span className="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3"><i className="fas fa-search"></i></span>
+                    <input type="text" placeholder="Search Subscription" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10" 
+                         onChange={e => onChangeHandler(e.target.value)}
+                         value={subscriptionInputText}
+                         onBlur={() => {
+                           setTimeout(() => {
+                             setSuggestions([]);
+                           }, 100);
+                         }}
+                    />
+                    </div>
+                    {/* <input
+                      type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Subscription Name"
-                    />
+                      onChange={e => onChangeHandler(e.target.value)}
+                      value={subscriptionInputText}
+                    /> */}
+                    <div className="autocomplete-items">{suggestions && suggestions.map((suggestion, index) => 
+                      <div 
+                        key={index}
+                        onClick={() => onSuggestHandler(suggestion)}
+                      >{suggestion}</div>
+                    )}
+                    </div>
                   </div>
 
                   <div className="relative w-full mb-3">

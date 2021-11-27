@@ -1,10 +1,10 @@
-package alexco.demo;
+package com.alexco.storage;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class StorageApplicationTests {
 
 	@Test
 	void contextLoads() {
