@@ -4,8 +4,6 @@ import SubscriptionTableItem from "./SubscriptionTableItem";
 const SubscriptionTable = () => {
   
   const tableHeaderClassNames = "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-
-
   return (
     <>
     <div
@@ -35,13 +33,15 @@ const SubscriptionTable = () => {
             <th className={tableHeaderClassNames}>
               Status
             </th>
-            <th className={tableHeaderClassNames}>
-              Users  Responsible
-            </th>
+
             <th className={tableHeaderClassNames}>
               Due Date
             </th>
+            <th className={tableHeaderClassNames}>
+              Users  Responsible
+            </th>
             <th className={tableHeaderClassNames}></th>
+            
           </tr>
         </thead>
         <tbody>

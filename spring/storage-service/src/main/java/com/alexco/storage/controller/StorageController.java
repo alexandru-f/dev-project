@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/storage/subscription")
 public class StorageController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class StorageController {
     @Autowired
     SubscriptionService subscriptionService;
 
-    @PostMapping("/subscription/new")
+    @PostMapping("/new")
     public ResponseEntity<?> addSubscription(@Valid @RequestBody SubscriptionInfo subscriptionInfo, BindingResult bindingResult) {
 
         ResponseEntity<?> errorMap = mapValidator.validateMapError(bindingResult);
@@ -35,7 +35,7 @@ public class StorageController {
         return new ResponseEntity<SubscriptionInfo>(subscriptionInfo1, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/subscription/search/name", produces = "application/json")
+    @GetMapping(value = "/search/names", produces = "application/json")
     public ResponseEntity<?> getSubscriptionsNames() {
 
         List<String> retrievedNames = subscriptionService.getAllSubscriptionsNames();

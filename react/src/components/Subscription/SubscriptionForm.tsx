@@ -1,25 +1,21 @@
-import axios from "axios";
-import { userInfo } from "os";
 import React, {useEffect, useState} from "react";
-import { useResolvedPath } from "react-router";
-
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import { fetchSubscriptionsNames, subscriptionsNames } from "../../features/subs-names-slice";
+import {Placeholder, Message} from 'rsuite';
+import { useSelector } from "react-redux";
 // components
 
 const SubscriptionForm = () => {
+  
+  const dispatch = useAppDispatch();
+  // const loading = useAppSelector((state) => state.subscriptionsNames.loading);
 
-  const [subscriptionNames, setSubscriptionNames] = useState<[]>([]);
+  const subscriptionNames = useAppSelector(subscriptionsNames);
   const [subscriptionInputText, setSubscriptionInputText] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
   useEffect(() => {
-    const getSubscriptionsName = async () => {
-      try {
-        const response = await axios.get('http://localhost:8081/api/subscription/search/name');
-        setSubscriptionNames(response.data.names);
-      } catch (err) {
-        console.log('new error: unable to get');
-      }
-    }
-    getSubscriptionsName();
+    dispatch(fetchSubscriptionsNames());  console.log(subscriptionNames);
   }, []);
 
   const onChangeHandler = (inputText:string) => {
@@ -74,12 +70,13 @@ const SubscriptionForm = () => {
                       onChange={e => onChangeHandler(e.target.value)}
                       value={subscriptionInputText}
                     /> */}
-                    <div className="autocomplete-items">{suggestions && suggestions.map((suggestion, index) => 
+                    <div className="autocomplete-items">
+                      {suggestions && suggestions.map((suggestion, index) => 
                       <div 
                         key={index}
                         onClick={() => onSuggestHandler(suggestion)}
                       >{suggestion}</div>
-                    )}
+                      )}
                     </div>
                   </div>
 
