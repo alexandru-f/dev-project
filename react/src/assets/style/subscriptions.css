@@ -39,6 +39,21 @@ div.subscription-modal {
     border-bottom: 1px solid #d4d4d4;
 }
 
+.subscription-item:focus,
 .autocomplete-items div:hover {
     background-color: rgba(248, 250, 252, var(--tw-bg-opacity));
+}
+
+.subscription-item:focus {
+    outline: none;
+}
+
+.no-matches {
+    padding: 0.5em 0;
+}
+
+.autocomplete-items .loading-elements-container {
+    max-width: 3rem;
+    border: none;
+    margin: 0 auto;
 }

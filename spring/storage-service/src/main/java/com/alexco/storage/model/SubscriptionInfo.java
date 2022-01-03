@@ -1,5 +1,8 @@
 package com.alexco.storage.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.redis.core.RedisHash;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -8,32 +11,29 @@ import java.time.LocalDateTime;
 public class SubscriptionInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(unique = true)
-    @NotBlank(message = "Name must not be blank")
     private String name;
+    private String path;
+    @JsonIgnore
+    private String category;
 
-    @NotBlank(message = "Picture Url must not be blank")
-    private String pictureUrl;
-
-    public SubscriptionInfo(String name, String pictureUrl, LocalDateTime date) {
+    public SubscriptionInfo(long id, String name, String path, String category) {
+        this.id = id;
         this.name = name;
-        this.pictureUrl = pictureUrl;
-        this.date = date;
+        this.path = path;
+        this.category = category;
     }
-
-    private LocalDateTime date;
-
     public SubscriptionInfo() {}
 
-    public LocalDateTime getDate() {
-        return date;
+    public long getId() {
+        return id;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -44,28 +44,19 @@ public class SubscriptionInfo {
         this.name = name;
     }
 
-    public String getPictureUrl() {
-        return pictureUrl;
+    public String getPath() {
+        return path;
     }
 
-    public void setPictureUrl(String pictureUrl) {
-        this.pictureUrl = pictureUrl;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-    public long getId() {
-        return id;
+    public String getCategory() {
+        return category;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.date = LocalDateTime.now();
-    }
-    @PreUpdate
-    protected void onUpdate() {
-        this.date = LocalDateTime.now();
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

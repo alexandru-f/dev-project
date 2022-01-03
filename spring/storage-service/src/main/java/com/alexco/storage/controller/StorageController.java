@@ -11,11 +11,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/storage/subscription")
+@RequestMapping("/api/storage")
 public class StorageController {
 
     @Autowired
@@ -35,16 +34,13 @@ public class StorageController {
         return new ResponseEntity<SubscriptionInfo>(subscriptionInfo1, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/search/names", produces = "application/json")
-    public ResponseEntity<?> getSubscriptionsNames() {
+    @GetMapping(value = "/subscription/search", produces = "application/json")
+    public ResponseEntity<?> getSubscriptionsNames(@RequestParam(name="q") String query) {
 
-        List<String> retrievedNames = subscriptionService.getAllSubscriptionsNames();
-        if (retrievedNames.size() == 0) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Iterable<SubscriptionInfo> subscriptions = subscriptionService.getSubscriptionsNames(query);
 
         JSONObject names = new JSONObject();
-        names.put("names", retrievedNames);
-        return new ResponseEntity<String>(names.toString(), HttpStatus.OK);
+        names.put("subscriptions", subscriptions);
+        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
 }

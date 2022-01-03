@@ -1,4 +1,4 @@
-import React, {useState, createRef, useRef} from "react";
+import React, {useState, createRef} from "react";
 import { createPopper } from "@popperjs/core";
 
 const NotificationDropdown = () => {

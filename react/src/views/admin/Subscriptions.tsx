@@ -21,9 +21,9 @@ const Subscriptions = () => {
         <div className="flex flex-wrap">
           <div className="w-full mb-12 px-4">
             <div className="w-full mx-autp items-center flex justify-end md:flex-nowrap flex-wrap md:px-9 px-4 add-items-bar py-3 w-full">
-              <CreateSubscriptionModal show={showModal} handleClose={closeModal}/>
+              {showModal && <CreateSubscriptionModal show={showModal} handleClose={closeModal}/>}
               <button 
-              onClick={(e) => openModal()} 
+              onClick={openModal} 
               className="add-button focus:outline-none"
               >
                 <i className="fas fa-plus-circle text-lightBlue-500 text-4xl hover:text-lightBlue-600"></i>

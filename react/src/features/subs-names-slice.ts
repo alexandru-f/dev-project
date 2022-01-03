@@ -3,32 +3,40 @@ import axios from 'axios';
 import { HTTP_STATUS } from '../app/constants';
 import { RootState } from '../app/store';
 
+interface SubscriptionType {
+  id: number;
+  name: string;
+  path: string;
+}
+
 interface SubNamesState {
   loading: string,
-  data: string[]
+  data: SubscriptionType[]
+  errorMessage: null
 }
 
 const initialState: SubNamesState = {
   loading: '',
-  data: []
+  data: [],
+  errorMessage: null
 };
   
-export const fetchSubscriptionsNames = createAsyncThunk(
+export const fetchSubscriptionsNames = createAsyncThunk<SubscriptionType[], string>(
   'subsNames/fetchSubscriptionsNames',
-  async () => {
-    try {
-      const response = await axios.get('/api/storage/subscription/search/names');
-      return response.data.names;
-    } catch (err) {
-      console.log('new error: unable to get');
-    }
+  async (query: string) => {
+      const {data} = await axios.get(`/api/storage/subscription/search?q=` + query);
+      return data;
   }
 );
 
 const subNamesSlice = createSlice({
   name: 'subsNames',
   initialState,
-  reducers: {},
+  reducers: {
+    clearSuggestions(state, action: PayloadAction) {
+      state.data = [];
+    }
+  },
   extraReducers: builder => {
     builder.addCase(fetchSubscriptionsNames.pending, (state) => {
       state.loading = HTTP_STATUS.PENDING
@@ -38,12 +46,13 @@ const subNamesSlice = createSlice({
       state.data = payload
     })
     builder.addCase(fetchSubscriptionsNames.rejected, (state) => {
-      state.loading = HTTP_STATUS.REJECTED
+      state.loading = HTTP_STATUS.REJECTED;
     })
   }
 });
 
-// export const {requestSubscriptionNames} = subNamesSlice.actions;
+export const {clearSuggestions} = subNamesSlice.actions;
 export const subscriptionsNames = (state: RootState) => state.subscriptionsNames.data; 
+export const subscriptionLoadingStatus = (state: RootState) => state.subscriptionsNames.loading;
 export default subNamesSlice.reducer;
 

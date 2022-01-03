@@ -1,13 +1,11 @@
 package com.alexco.storage.Repository;
 
 import com.alexco.storage.model.SubscriptionInfo;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
-public interface SubscriptionInfoRepository extends CrudRepository<SubscriptionInfo, Long> {
+public interface SubscriptionInfoRepository extends JpaRepository<SubscriptionInfo, Long> {
     public Iterable<SubscriptionInfo> findByNameContainingIgnoreCase(String name);
+    public Iterable<SubscriptionInfo> findTop5ByNameContainingIgnoreCase(String name);
 }

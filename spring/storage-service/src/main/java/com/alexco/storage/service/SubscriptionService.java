@@ -4,9 +4,6 @@ import com.alexco.storage.Repository.SubscriptionInfoRepository;
 import com.alexco.storage.exception.SubscriptionNameAlreadyExistsException;
 import com.alexco.storage.model.SubscriptionInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SubscriptionService {
 
     private final SubscriptionInfoRepository subscriptionInfoRepository;
@@ -23,11 +20,8 @@ public class SubscriptionService {
         }
     }
 
-    public List<String> getAllSubscriptionsNames() {
-        List<String> names = new ArrayList<>();
-        Iterable<SubscriptionInfo> subscriptionInfoList = subscriptionInfoRepository.findAll();
-        subscriptionInfoList.forEach(e -> names.add(e.getName()));
-        return names;
+    public Iterable<SubscriptionInfo> getSubscriptionsNames(String query) {
+        return subscriptionInfoRepository.findTop5ByNameContainingIgnoreCase(query);
     }
 
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
-import {BrowserRouter, Routes, Route, Link} from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Admin from './layout/Admin';
 import Subscriptions from './views/admin/Subscriptions';
 // CSS Import

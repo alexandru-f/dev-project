@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import SubscriptionForm from '../Subscription/SubscriptionForm';
-
 interface Props {
   show: boolean,
   handleClose: () => void
@@ -19,7 +18,8 @@ const SubscriptionModal:React.FC<Props> = ({show, handleClose}) => {
     return () => {
       window.removeEventListener('keydown', handleEsc);
     }
-  }, []);
+   
+  }, [handleClose]);
 
   return (
     <> 
