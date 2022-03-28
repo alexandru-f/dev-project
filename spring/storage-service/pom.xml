@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.alexco</groupId>
-	<artifactId>storage</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>storage-service</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>storage</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -75,6 +75,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -87,7 +93,22 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>fasoleacalexandru/${project.artifactId}:${project.version}
+						</name>
+					</image>
+					<pullPolicy>IF_NOT_PRESENT</pullPolicy>
 
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<repositories>
 		<repository>

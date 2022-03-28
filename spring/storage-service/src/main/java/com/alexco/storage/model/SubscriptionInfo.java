@@ -1,11 +1,8 @@
 package com.alexco.storage.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.redis.core.RedisHash;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+
 
 @Entity
 public class SubscriptionInfo {
@@ -58,5 +55,15 @@ public class SubscriptionInfo {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return "SubscriptionInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", category='" + category + '\'' +
+                '}';
     }
 }

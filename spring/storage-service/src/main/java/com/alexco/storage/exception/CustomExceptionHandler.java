@@ -17,4 +17,9 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SubscriptionInfoNotFoundException.class)
+    public final ResponseEntity<SubscriptionInfoNotFoundResponse> subscriptionInfoNotFoundException(SubscriptionInfoNotFoundException ex, WebRequest request) {
+        SubscriptionInfoNotFoundResponse apiExceptionResponse = new SubscriptionInfoNotFoundResponse(ex.getMessage());
+        return new ResponseEntity<>(apiExceptionResponse, HttpStatus.BAD_REQUEST);
+    }
 }

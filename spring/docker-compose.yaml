@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+    storage-service:
+        image: fasoleacalexandru/storage-service:0.0.2-SNAPSHOT
+        mem_limit: 700m
+        ports:
+            - "8081:8081"
+        networks:
+            - storage-network
+        depends_on:
+            - naming-server
+        environment:
+            EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+
+    api-gateway:
+        image: fasoleacalexandru/api-gateway:0.0.1-SNAPSHOT
+        mem_limit: 700m
+        ports:
+            - "8765:8765"
+        networks:
+            - storage-network
+        depends_on:
+            - naming-server
+        environment:
+            EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+
+    naming-server:
+        image: fasoleacalexandru/naming-server:latest
+        mem_limit: 700m
+        ports:
+            - "8761:8761"
+        networks:
+            - storage-network
+
+networks:
+  storage-network:
+    
