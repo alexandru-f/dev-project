@@ -6,6 +6,7 @@ export interface IModalContentProps {
 }
 
 type Currency = 'EUR' | 'USD' | 'JPY' | 'GBP';
+
 export interface IFormState {
   subscriptionName: string,
   currency: Currency,
@@ -14,6 +15,7 @@ export interface IFormState {
   payingDueDate: Date | null,
   responsibleUsers?: []
 }
+
 
 export interface IValidationObject {
   subscriptionName: string,

@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { HTTP_STATUS } from '../app/constants';
-import { RootState } from '../app/store';
+// import { RootState } from '../app/store';
 import {ISubNamesState, ISubscriptionType} from '../interface/IApi'
 import {isSomeAsyncActionsPending, isSomeAsyncActionsFulfilled, isSomeAsyncActionsRejected} from './sliceHelper';
 
@@ -53,6 +53,6 @@ const subNamesSlice = createSlice({
 });
 
 export const {clearSuggestions} = subNamesSlice.actions;
-export const subscriptionsNames = (state: RootState) => state.subscriptionsNames.data; 
-export const subscriptionLoadingStatus = (state: RootState) => state.subscriptionsNames.loading;
+// export const subscriptionsNames = (state: RootState) => state.subscriptionsNames.data; 
+// export const subscriptionLoadingStatus = (state: RootState) => state.subscriptionsNames.loading;
 export default subNamesSlice.reducer;

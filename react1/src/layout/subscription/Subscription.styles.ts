@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "30px",
     maxWidth: "100%",
     height: "auto",
-    paddingRight: "10px"
+    paddingRight: "15px"
   },
   listItems: {
     display: "flex",
@@ -22,6 +22,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: "5px",
     paddingBottom: "5px"
   },
+  tableCell: {
+    display: "flex",
+    alignItems: "center"
+  },
+  table: {
+    "& td": {
+      fontSize: '1rem',
+      paddingTop: '10px',
+      paddingBottom: '10px',
+      paddingLeft: '16px',
+      paddingRight: '16px'
+    }
+  },
+
   root: {
     '&.MuiContainer-root': {
       paddingLeft: theme.spacing(6),

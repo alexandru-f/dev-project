@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/storage/v1/subscription")
+@RequestMapping("/api/v1/storage/subscription")
 public class StorageController {
 
     @Autowired

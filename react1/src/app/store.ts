@@ -1,12 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import subNamesReducer from '../features/subs-names-slice';
-import subscriptionReducer from '../features/subscription-slice';
-
+import {subscriptionNamesApi} from '../features/subscriptionNamesApi'
+import { subscriptionApi } from "../features/subscriptionApi";
 export const store = configureStore({
   reducer: {
-    subscriptionsNames: subNamesReducer,
-    subscription: subscriptionReducer
-  }
+    [subscriptionNamesApi.reducerPath]: subscriptionNamesApi.reducer,
+    [subscriptionApi.reducerPath]: subscriptionApi.reducer
+  },
+  middleware: (getDefaultMiddleware) => 
+  getDefaultMiddleware()
+  .concat(subscriptionNamesApi.middleware)
+  .concat(subscriptionApi.middleware)
 });
 
 export type AppDispatch = typeof store.dispatch;

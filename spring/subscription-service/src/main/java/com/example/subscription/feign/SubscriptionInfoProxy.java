@@ -16,10 +16,10 @@ import java.util.List;
 @FeignClient(name = "storage-service", url = "localhost:8081")
 public interface SubscriptionInfoProxy {
 
-    @GetMapping(value = "/api/storage/v1/subscription/searchById", produces = "application/json")
+    @GetMapping(value = "/api/v1/storage/subscription/searchById", produces = "application/json")
     @HandleFeignError(SubscriptionInfoClientExceptionHandler.class)
     public List<SubscriptionInfoDTO> getSubscriptionById(@RequestParam(name="id") List<Long> id) throws SubscriptionInfoNotFoundException;
 
-    @PostMapping(value = "/api/storage/v1/subscription/checkSubscription", produces = "application/json")
+    @PostMapping(value = "/api/v1/storage/subscription/checkSubscription", produces = "application/json")
     public SubscriptionInfoShortDTO checkAndSaveSubscription(@RequestBody SubscriptionInfoDTO subscriptionInfo);
 }

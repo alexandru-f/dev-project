@@ -13,7 +13,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/subscription/v1")
+@RequestMapping("/api/v1/subscription")
+@CrossOrigin
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
@@ -24,7 +25,7 @@ public class SubscriptionController {
         this.validateErrors = validateErrors;
     }
 
-    @PostMapping("/register")
+    @PostMapping("")
     public ResponseEntity<?> createNewSubscription(@Valid @RequestBody SubscriptionDTO subscriptionDTO,
                                                    BindingResult bindingResult) {
         ResponseEntity<?> errors = validateErrors.validate(bindingResult);

@@ -14,8 +14,8 @@ public class ApiGatewayConfiguration {
     public RouteLocator gatewayRouter(RouteLocatorBuilder builder) {
         return builder
                 .routes()
-                .route(p -> p.path("/api/storage/**").uri("lb://storage-service"))
-                .route(p -> p.path("/api/**").uri("lb://subscription-service"))
+                .route(p -> p.path("/api/v1/storage/**").uri("lb://storage-service"))
+                .route(p -> p.path("/api/v1/**").uri("lb://subscription-service"))
                 .build();
     }
 

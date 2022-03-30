@@ -1,10 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import { fetchSubscriptionsNames, subscriptionsNames, clearSuggestions} from '../../../features/subs-names-slice';
-import { addSubscription, subscriptionLoadingStatus, clearLoadingState } from "../../../features/subscription-slice";
 import debounce from 'lodash.debounce';
-import { unwrapResult } from '@reduxjs/toolkit';
-import {CDN_PATH, HTTP_STATUS} from '../../../app/constants';
+import {CDN_PATH} from '../../../app/constants';
 import TextField from '@mui/material/TextField';
 import { Autocomplete, Grid, Typography, Tooltip } from "@mui/material";
 import Modal from '../../../components/Modal/Modal';
@@ -20,31 +16,33 @@ import {initialFormValues, initialErrorValues, currencies, licensesStatus, valid
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-
+import { useGetAllNamesQuery } from "../../../features/subscriptionNamesApi";
+import { useAddSubscriptionMutation } from "../../../features/subscriptionApi";
 
 const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes}) => {
 
   const [query, setQuery] = useState<string>("");
   const [formValues, setFormValues] = useState<IFormState>(initialFormValues);
   const [errors, setErrors] = useState<IValidationObject>(initialErrorValues);
-  const dispatch = useAppDispatch();
-  const suggestedSubscriptionNames = useAppSelector(subscriptionsNames);
-  const loadingStatus = useAppSelector(subscriptionLoadingStatus);
-
-
+  const [skip, setSkip] = useState<boolean>(true);
+  const { data: subscriptionNames = [] } = useGetAllNamesQuery(query, {skip});
+  const [addSubscription, 
+    {isSuccess: addSubscriptionIsSuccess,
+     isLoading: addSubscriptionIsLoading, 
+     isError: addSubscriptionIsError
+    }] = useAddSubscriptionMutation();
   const handleSubmit = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     if (validateFormFields()) {
-      dispatch(addSubscription(formValues)).then(unwrapResult).catch((obj) => {
-        dispatch(addSubscription(formValues));
-      }).finally(() => {
-        console.log('in finally')
-        handleClose();
-      });
+      addSubscription(formValues);
     }
   }
 
   const handleSearch = (query: string) => {
+    if (skip) {
+      setSkip(false);
+    }
+    
     setFormValues(prevState => ({
       ...prevState,
       subscriptionName: query
@@ -114,14 +112,14 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
               freeSolo
               autoHighlight
               getOptionLabel={(option) => option.name || ""}
-              options={suggestedSubscriptionNames}
+              options={subscriptionNames}
               filterOptions={(x) => x}
               renderInput={(params) => <TextField {...errors.subscriptionName && {error: true, helperText: errors.subscriptionName}} {...params} label="Subscription Name"/>}
               renderOption={(props, option) => (
                 <Box key={option.id} className={classes.listItems} component="li" {...props}>
                   <img onError={({currentTarget}) => {
                     currentTarget.onerror = null;
-                    currentTarget.src='https://lab.csschopper.com/placeholder/images/placeholder_image_logo.png';
+                    currentTarget.src='https://cdn.icon-icons.com/icons2/1378/PNG/512/imagemissing_92832.png';
                   }} 
                   className={classes.subsIcons} alt={option.name + " logo"} 
                   src={CDN_PATH + option.path.replace('/subscriptions-images', '')} />
@@ -198,7 +196,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
             />
            </Grid>
            <Grid item xs={12}>
-             {loadingStatus === HTTP_STATUS.REJECTED ? <Alert variant="standard" severity="error">
+             {addSubscriptionIsError ? <Alert variant="standard" severity="error">
               <AlertTitle sx={{display: 'inline'}}>Error occured.</AlertTitle>Please try again.
             </Alert>: ''}
            </Grid>
@@ -211,7 +209,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
     return (
       <LoadingButton
         size="medium"
-        loading={loadingStatus === HTTP_STATUS.PENDING ? true : false}
+        loading={addSubscriptionIsLoading}
         onClick={handleSubmit}
         loadingIndicator="Loading..."
         variant="outlined"
@@ -221,18 +219,6 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
     );
   }
 
-
-  useEffect(() => {
-    if (!query) return;
-    const fetchResults = () => {
-      dispatch(fetchSubscriptionsNames(query)).then(unwrapResult).catch((obj) => {
-        dispatch(fetchSubscriptionsNames(query));
-      });
-    };
-    
-    fetchResults();
-  }, [query, dispatch]);
-
   useEffect(() => {
     return () => {
       debouncedChangeHandler.cancel();
@@ -240,13 +226,11 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
   }, [debouncedChangeHandler]);
 
   useEffect(() => {
-    if (subscriptionsNames.length > 0) {
-      dispatch(clearSuggestions());
+    if (addSubscriptionIsSuccess) {
+      handleClose();
     }
-    if (loadingStatus === HTTP_STATUS.REJECTED) {
-      dispatch(clearLoadingState());
-    }
-  }, []);
+  }, [addSubscriptionIsSuccess, handleClose]);
+
   return (
     <Modal 
       open={open} 
