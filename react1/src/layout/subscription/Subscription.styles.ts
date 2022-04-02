@@ -4,11 +4,6 @@ import { palette } from "@mui/system";
 import { theme } from "../../theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
-  // subscriptionTableContainer: {
-  //   paddingTop: theme.spacing(4),
-  //   paddingLeft: theme.spacing(4),
-  //   paddingRight: theme.spacing(4)
-  // }
   subsIcons: {
     width: "30px",
     maxWidth: "100%",
@@ -22,20 +17,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: "5px",
     paddingBottom: "5px"
   },
-  tableCell: {
-    display: "flex",
-    alignItems: "center"
-  },
-  table: {
-    "& td": {
-      fontSize: '1rem',
-      paddingTop: '10px',
-      paddingBottom: '10px',
-      paddingLeft: '16px',
-      paddingRight: '16px'
-    }
-  },
-
   root: {
     '&.MuiContainer-root': {
       paddingLeft: theme.spacing(6),
@@ -43,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingTop: theme.spacing(4),
       backgroundColor: "#eee",
       height: "100vh"
-    }
+    },
   }
 
 }));

@@ -15,7 +15,10 @@ export interface IFormState {
   payingDueDate: Date | null,
   responsibleUsers?: []
 }
-
+export interface ICurrencies {
+  label: string;
+  value: string;
+}
 
 export interface IValidationObject {
   subscriptionName: string,
@@ -23,6 +26,6 @@ export interface IValidationObject {
   payingDueDate: string
 }
 
-export interface ObjectLiteral {
+export interface IObjectLiteral {
   [key: string]: any;
 }

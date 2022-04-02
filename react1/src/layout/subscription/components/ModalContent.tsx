@@ -10,8 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import DateAdapter from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
-import {IFormState, IModalContentProps, IValidationObject, ObjectLiteral} from '../../../interface/IModalContent';
-import EnhancedInput from "../../../components/Input/Input";
+import {IFormState, IModalContentProps, IValidationObject, IObjectLiteral, ICurrencies} from '../../../interface/IModalContent';
+import EnhancedInput from "../../../components/Input/EnhancedInput";
 import {initialFormValues, initialErrorValues, currencies, licensesStatus, validatePrice} from '../Helper';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
@@ -24,7 +24,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
   const [query, setQuery] = useState<string>("");
   const [formValues, setFormValues] = useState<IFormState>(initialFormValues);
   const [errors, setErrors] = useState<IValidationObject>(initialErrorValues);
-  const [skip, setSkip] = useState<boolean>(true);
+  const [skip, setSkip] = useState<boolean>(true);  
   const { data: subscriptionNames = [] } = useGetAllNamesQuery(query, {skip});
   const [addSubscription, 
     {isSuccess: addSubscriptionIsSuccess,
@@ -55,7 +55,17 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
   , [query]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = event.target;
+    let {name, value} = event.target;
+
+    //sanitize before setting value
+    switch (name) {
+      case 'monthlyPrice':
+        value = value.replace(/[^\d.-]/g, '')
+    }
+    setFormValues(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
 
     setFormValues(prevState => ({
       ...prevState,
@@ -65,7 +75,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
   }
 
   const onChangeHandler = (value, event?: React.SyntheticEvent<Element, Event>) => {
-    const currentObject: ObjectLiteral = {};
+    const currentObject: IObjectLiteral = {};
     if (event === undefined) {
       if (value === null) return;
       currentObject.payingDueDate = value;
@@ -87,7 +97,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
     }));
   }
   
-  const validateFormFields = (fieldValues: (IFormState | ObjectLiteral) = formValues) => {
+  const validateFormFields = (fieldValues: (IFormState | IObjectLiteral) = formValues) => {
     let temp = {...errors};
     if ('subscriptionName' in fieldValues)
       temp.subscriptionName = fieldValues.subscriptionName ? "" : "This field is required";
@@ -95,12 +105,21 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
       temp.monthlyPrice = validatePrice(fieldValues.monthlyPrice);
     if ('payingDueDate' in fieldValues)
       temp.payingDueDate = fieldValues.payingDueDate !== null ? "" : "This field is required";
+      console.log(temp);
     setErrors({
       ...temp
     });
-    if (fieldValues == formValues)
+    if (fieldValues === formValues)
       return Object.values(temp).every( x => x === "");
   }
+
+  const getCurrencySymbol = (formCurrency: string, currenciesArray: ICurrencies[]) => {
+    return currenciesArray
+    .filter(e => e.value === formCurrency)
+    .map(e => e.label)
+    .join();
+  }
+
   const renderFields = () => {
     return (
       <Box>
@@ -144,6 +163,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
               dropdownItems={currencies}
             />
            </Grid>
+           
            <Grid item xs={5}>
             <EnhancedInput 
               id="monthly-price" 
@@ -152,6 +172,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
               label="Price" 
               onChange={handleInputChange}
               error={errors.monthlyPrice}
+              currencySymbol={getCurrencySymbol(formValues.currency, currencies)}
             />
            </Grid>
            <Grid item sm={3}>

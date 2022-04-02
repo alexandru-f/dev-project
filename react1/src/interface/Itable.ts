@@ -3,11 +3,8 @@ export interface EnhancedTableToolbarProps {
   numSelected: number;
 }
 
-export interface Data {
-  calories: number;
-  carbs: number;
-  fat: number;
-  name: string;
-  protein: number;
+export interface IHeadCell {
+  id: string;
+  label: string;
+  disableSorting?: boolean
 }
-
