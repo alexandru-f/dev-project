@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { IHeadCell } from "../../interface/Itable";
 import Chip from '@mui/material/Chip';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import { ISubscription } from '../../interface/IApi';
@@ -35,7 +35,7 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
   const {data, isError, isLoading} = dataObject;
   const [order, setOrder] = useState<OrderType>('asc');
   const [orderBy, setOrderBy] = useState<string>('subscriptionName');
-  
+
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number) => {
@@ -65,18 +65,6 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
     });
     return stabilizedThis.map((el) => el[0]);
   }
-  
-  // function getComparator<Key extends string>(
-  //   order: OrderType,
-  //   orderBy: Key,
-  // ): (
-  //   a: { [key in Key]: number | string },
-  //   b: { [key in Key]: number | string },
-  // ) => number {
-  //   return order === 'desc'
-  //     ? (a, b) => descendingComparator(a, b, orderBy)
-  //     : (a, b) => -descendingComparator(a, b, orderBy);
-  // }
     
   function getComparator(order: OrderType, orderBy: string) {
     return order === 'desc'
@@ -95,12 +83,12 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
   }
 
   const handlePaginationAndSorting = (data: FetchedData["data"]) => {
-    // return data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
     return stableSort<ISubscription>(data, getComparator(order, orderBy));
   }
 
   return (
         <TableContainer>
+           <>{isError && snackbar}</>
           <Table className={classes.table}>
             {/* Table Header */}
             <TableHead>
@@ -129,19 +117,13 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
             </TableHead>
             {/* Table Body */}
             <TableBody>
-              {isError ? (
+              {isLoading ? (
                 <TableRow>
-                  <TableCell>
-                    {snackbar}
-                  </TableCell>
-                </TableRow>
-              ) : isLoading ? (
-                <TableRow>
-                  <TableCell>
-                    <Box sx={{ display: 'flex' }}>
-                    <CircularProgress />
-                  </Box>
-                  </TableCell>
+                  <TableCell colSpan={6}>
+                    <Box className={classes.tableInnerContainer}>
+                      <CircularProgress />
+                    </Box>
+                  </TableCell>  
                 </TableRow>
               ) : 
               data ?
@@ -183,7 +165,7 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
                 </TableRow>
                  );
                 })
-                : data)
+                : (<Box className={classes.tableInnerContainer}>No Subscriptions Found.</Box>))
               : null}
             </TableBody>
             <TableFooter>

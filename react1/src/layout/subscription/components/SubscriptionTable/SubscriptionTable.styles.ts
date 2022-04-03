@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center"
   },
   tableLabelText: {
-    color: '#fff'
+    color: '#fff',
   },
   root: {
     '&.MuiTableSortLabel-root': {
@@ -49,6 +49,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&.Mui-active': {
       color: 'white!important',
     }
+  },
+  tableInnerContainer: {
+    display: 'flex',
+    paddingTop: '20px',
+    paddingBottom: '20px',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 }));
 

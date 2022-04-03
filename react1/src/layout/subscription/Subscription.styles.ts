@@ -21,10 +21,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&.MuiContainer-root': {
       paddingLeft: theme.spacing(6),
       paddingRight: theme.spacing(6),
-      paddingTop: theme.spacing(4),
+      paddingTop: theme.spacing(6),
       backgroundColor: "#eee",
       height: "100vh"
     },
+  },
+  boxHeader: {
+    display: 'flex',
+    padding: '30px 20px 20px 20px'
   }
 
 }));

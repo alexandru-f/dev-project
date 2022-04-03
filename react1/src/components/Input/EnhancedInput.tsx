@@ -8,7 +8,7 @@ interface DropdownOptions {
 }
 
 interface IInputProps {
-  sx?: object,
+  sxProps?: object,
   id: string,
   name: string,
   label: string,
@@ -17,10 +17,11 @@ interface IInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
   dropdownItems?: Array<DropdownOptions>
   currencySymbol?: string;
+  inputProps?: any;
 }
 
 
-const EnhancedInput:React.FC<IInputProps> = ({sx, id, error, name, label, value, onChange, dropdownItems, currencySymbol}) => {
+const EnhancedInput:React.FC<IInputProps> = ({sxProps, id, error, name, label, value, onChange, dropdownItems, currencySymbol, inputProps}) => {
   
   switch(name) {
     case 'monthlyPrice':
@@ -34,7 +35,7 @@ const EnhancedInput:React.FC<IInputProps> = ({sx, id, error, name, label, value,
           customInput={TextField}
           thousandSeparator={true}
           allowNegative={true}
-          sx={sx}
+          sx={sxProps}
           id={id}
           name={name}
           label={label}
@@ -46,13 +47,14 @@ const EnhancedInput:React.FC<IInputProps> = ({sx, id, error, name, label, value,
     default: 
     return (
       <TextField
-          sx={sx}
+          sx={sxProps}
           id={id}
           select={dropdownItems ? true: false}
           name={name}
           label={label}
           value={value}
           onChange={onChange}
+          InputProps={inputProps ? inputProps : false}
         >
           {dropdownItems && dropdownItems.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -65,7 +67,7 @@ const EnhancedInput:React.FC<IInputProps> = ({sx, id, error, name, label, value,
 }
 
 EnhancedInput.defaultProps = {
-  sx: {width: '100%'},
+  sxProps: {width: '100%'},
   error: null
 };
 export default EnhancedInput;
