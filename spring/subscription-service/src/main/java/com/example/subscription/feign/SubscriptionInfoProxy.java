@@ -5,6 +5,7 @@ import com.example.subscription.DTO.SubscriptionInfoShortDTO;
 import com.example.subscription.exception.SubscriptionInfoNotFoundException;
 import com.example.subscription.exception.client.SubscriptionInfoClientExceptionHandler;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +19,11 @@ public interface SubscriptionInfoProxy {
 
     @GetMapping(value = "/api/v1/storage/subscription/searchById", produces = "application/json")
     @HandleFeignError(SubscriptionInfoClientExceptionHandler.class)
-    public List<SubscriptionInfoDTO> getSubscriptionById(@RequestParam(name="id") List<Long> id) throws SubscriptionInfoNotFoundException;
+    public List<SubscriptionInfoDTO> getSubscriptionsById(@RequestParam(name="id") List<Long> id) throws SubscriptionInfoNotFoundException;
 
     @PostMapping(value = "/api/v1/storage/subscription/checkSubscription", produces = "application/json")
     public SubscriptionInfoShortDTO checkAndSaveSubscription(@RequestBody SubscriptionInfoDTO subscriptionInfo);
+
+    @GetMapping("/api/v1/storage/subscription")
+    public ResponseEntity<?> getSubscriptionById(@RequestParam(name="id") long id) throws SubscriptionInfoNotFoundException;
 }

@@ -46,21 +46,19 @@ public class StorageController {
         return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
 
-//    @GetMapping(value = "/searchById", produces = "application/json")
-//    public ResponseEntity<?> getSubscriptionById(@RequestParam(name="id") long id) {
-//        SubscriptionInfo subscriptionInfo = subscriptionService.getSubscriptionById(id);
-//        return new ResponseEntity<>(subscriptionInfo, HttpStatus.OK);
-//    }
+    @GetMapping("")
+    public ResponseEntity<?> getSubscriptionById(@RequestParam(name="id") long id) {
+        SubscriptionInfo subscriptionInfo = subscriptionService.getSubscriptionById(id);
+        return new ResponseEntity<>(subscriptionInfo, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/searchById", produces = "application/json")
     public ResponseEntity<?> getSubscriptionsById(@RequestParam List<Long> id) {
-        System.out.println(id.toString());
         List<SubscriptionInfo> subscriptions = subscriptionService.getSubscriptionsById(id);
-        System.out.println(subscriptions.toString());
         return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/checkSubscription")
+    @PostMapping("/checkSubscription")
     public ResponseEntity<?> checkAndSaveSubscription(@Valid @RequestBody SubscriptionInfo subscriptionInfo) {
         SubscriptionInfoShortDTO subscriptionInfoShortDTO = subscriptionService.checkAndSaveSubscription(subscriptionInfo);
         return new ResponseEntity<>(subscriptionInfoShortDTO, HttpStatus.OK);

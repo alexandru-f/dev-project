@@ -40,5 +40,20 @@ public class SubscriptionController {
         return new ResponseEntity<>(subscriptions, HttpStatus.OK);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateSubscriptionById(
+            @PathVariable(name = "id") long id,
+            @Valid @RequestBody SubscriptionDTO subscriptionDTO,
+            BindingResult bindingResult) {
+        ResponseEntity<?> errors = validateErrors.validate(bindingResult);
+        if (errors != null) return errors;
+        subscriptionService.updateSubscriptionById(id, subscriptionDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteSubscriptionById(@PathVariable(name = "id") long id){
+        subscriptionService.deleteSubscriptionById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

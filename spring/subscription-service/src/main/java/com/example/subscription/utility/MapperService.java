@@ -18,6 +18,13 @@ public class MapperService {
                 .build();
     }
 
+    public void mapToSubscriptionFromDTO(SubscriptionDTO subscriptionDTO, Subscription subscription) {
+        subscription.setCurrency(subscriptionDTO.getCurrency());
+        subscription.setPrice(subscriptionDTO.getMonthlyPrice());
+        subscription.setStatus(subscriptionDTO.isStatus());
+        subscription.setPayingDueDate(subscriptionDTO.getPayingDueDate());
+    }
+
     public FullSubscriptionInfoDTO mapToFullSubscriptionInfoDTO(Subscription subscription, SubscriptionInfoDTO subscriptionInfo) {
         return FullSubscriptionInfoDTO.builder()
                 .id(subscription.getId())
