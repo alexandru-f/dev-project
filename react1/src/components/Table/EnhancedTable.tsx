@@ -2,44 +2,41 @@ import { Box } from "@mui/system";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
 import {CDN_PATH} from '../../app/constants';
-import IconButton from "@mui/material/IconButton";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { IHeadCell } from "../../interface/Itable";
 import Chip from '@mui/material/Chip';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
-import { ISubscription } from '../../interface/IApi';
+import { DeleteOrModifySubscriptionType, ISubscription } from '../../interface/IApi';
+import ShowMoreMenu from '../Menu/ShowMoreMenu';
 
 interface FetchedData {
   data: ISubscription[];
-  isError: boolean;
   isLoading: boolean;
   isSuccess: boolean;
 }
 
 interface IEnhancedTable {
   classes: any;
-  snackbar: React.ReactNode;
   headCells: IHeadCell[];
   dataObject: FetchedData;
+  openInPopup: (subscription: DeleteOrModifySubscriptionType) => void;
 }
 
 type OrderType = 'asc' | 'desc';
 
-const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, dataObject}) => {
+const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject, openInPopup}) => {
   
-  const pages = [5, 10, 25];
+  const pages = [5, 10];
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(pages[page]);
-  const {data, isError, isLoading} = dataObject;
+  const {data, isLoading} = dataObject;
   const [order, setOrder] = useState<OrderType>('asc');
-  const [orderBy, setOrderBy] = useState<string>('subscriptionName');
+  const [orderBy, setOrderBy] = useState<string>('');
 
   const handlePageChange = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number) => {
-    console.log(newPage);
     setPage(newPage);
   }
 
@@ -88,7 +85,6 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
 
   return (
         <TableContainer>
-           <>{isError && snackbar}</>
           <Table className={classes.table}>
             {/* Table Header */}
             <TableHead>
@@ -153,19 +149,19 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, snackbar, headCells, d
                   </TableCell>
                   <TableCell>{new Date(item.payingDueDate).toLocaleDateString('en-US')}</TableCell>
                   <TableCell>
-                  <IconButton
-                    size="large"
-                    aria-label="more infos"
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <MoreHorizIcon />
-                  </IconButton>
+                  {<ShowMoreMenu
+                    openInPopup={openInPopup} 
+                    item={item}
+                  />}
                   </TableCell>
                 </TableRow>
                  );
                 })
-                : (<Box className={classes.tableInnerContainer}>No Subscriptions Found.</Box>))
+                : (<TableRow>
+                    <TableCell>
+                      <Box className={classes.tableInnerContainer}>No Subscriptions Found.</Box>
+                    </TableCell>
+                  </TableRow>))
               : null}
             </TableBody>
             <TableFooter>

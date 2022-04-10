@@ -1,29 +1,33 @@
+import { ISubscription } from "./IApi";
+
 export interface IModalContentProps {
-  open: boolean,
-  handleClose: () => void, 
-  classes: any,
-  // handleChildFormSubmit: () => void
+  open: boolean;
+  handleClose: () => void; 
+  classes: any;
+  recordToEdit: IFormState | null;
 }
 
-type Currency = 'EUR' | 'USD' | 'JPY' | 'GBP';
+export type Currency = 'EUR' | 'USD' | 'JPY' | 'GBP';
 
 export interface IFormState {
-  subscriptionName: string,
-  currency: Currency,
-  monthlyPrice: string,
-  status: number,
-  payingDueDate: Date | null,
-  responsibleUsers?: []
+  id: number | null;
+  subscriptionName: string;
+  currency: Currency;
+  monthlyPrice: string;
+  status: number;
+  payingDueDate: Date | null;
+  responsibleUsers?: [];
 }
+
 export interface ICurrencies {
   label: string;
   value: string;
 }
 
 export interface IValidationObject {
-  subscriptionName: string,
-  monthlyPrice: string,
-  payingDueDate: string
+  subscriptionName: string;
+  monthlyPrice: string;
+  payingDueDate: string;
 }
 
 export interface IObjectLiteral {

@@ -17,25 +17,47 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import { useGetAllNamesQuery } from "../../../features/subscriptionNamesApi";
-import { useAddSubscriptionMutation } from "../../../features/subscriptionApi";
+import { useAddSubscriptionMutation, useUpdateSubscriptionMutation } from "../../../features/subscriptionApi";
+import { VariantType, useSnackbar } from 'notistack';
 
-const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes}) => {
+const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes, recordToEdit}) => {
 
   const [query, setQuery] = useState<string>("");
   const [formValues, setFormValues] = useState<IFormState>(initialFormValues);
   const [errors, setErrors] = useState<IValidationObject>(initialErrorValues);
   const [skip, setSkip] = useState<boolean>(true);  
   const { data: subscriptionNames = [] } = useGetAllNamesQuery(query, {skip});
+  const { enqueueSnackbar } = useSnackbar();
+
   const [addSubscription, 
     {isSuccess: addSubscriptionIsSuccess,
      isLoading: addSubscriptionIsLoading, 
      isError: addSubscriptionIsError
     }] = useAddSubscriptionMutation();
+
+  const [updateSubscription, 
+    {isSuccess: updateSubscriptionIsSuccess,
+     isLoading: updateSubscriptionIsLoading
+   }] = useUpdateSubscriptionMutation();
+
   const handleSubmit = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     if (validateFormFields()) {
-      addSubscription(formValues);
+      // Check if subscription is new (Create) or not (Edit)
+      if (formValues.id === null) {
+        addSubscriptionHandler(formValues)
+      } else {
+        updateSubscriptionHandler(formValues);
+      }
     }
+  }
+
+  const addSubscriptionHandler = async (formValues: IFormState) => {
+    await addSubscription(formValues);
+  }
+
+  const updateSubscriptionHandler = async (formValues: IFormState) => {
+    await updateSubscription(formValues);
   }
 
   const handleSearch = (query: string) => {
@@ -62,11 +84,6 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
       case 'monthlyPrice':
         value = value.replace(/[^\d.-]/g, '')
     }
-    setFormValues(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-
     setFormValues(prevState => ({
       ...prevState,
       [name]: value
@@ -105,7 +122,6 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
       temp.monthlyPrice = validatePrice(fieldValues.monthlyPrice);
     if ('payingDueDate' in fieldValues)
       temp.payingDueDate = fieldValues.payingDueDate !== null ? "" : "This field is required";
-      console.log(temp);
     setErrors({
       ...temp
     });
@@ -125,33 +141,44 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
       <Box>
          <Grid container spacing={1} rowSpacing={2}>
            <Grid item xs={12}>
-            <Autocomplete 
-              sx={{my: "10px", width: '100%'}}
-              id="free-solo"
-              freeSolo
-              autoHighlight
-              getOptionLabel={(option) => option.name || ""}
-              options={subscriptionNames}
-              filterOptions={(x) => x}
-              renderInput={(params) => <TextField {...errors.subscriptionName && {error: true, helperText: errors.subscriptionName}} {...params} label="Subscription Name"/>}
-              renderOption={(props, option) => (
-                <Box key={option.id} className={classes.listItems} component="li" {...props}>
-                  <img onError={({currentTarget}) => {
-                    currentTarget.onerror = null;
-                    currentTarget.src='https://cdn.icon-icons.com/icons2/1378/PNG/512/imagemissing_92832.png';
-                  }} 
-                  className={classes.subsIcons} alt={option.name + " logo"} 
-                  src={CDN_PATH + option.path.replace('/subscriptions-images', '')} />
-                  <Typography sx={{lineHeight: "28px", fontSize: "1.1rem"}} variant="caption">{option.name}</Typography>
-                </Box>
-                )}
-              onInputChange={(event, newInputValue) => {
-                handleSearch(newInputValue);
-              }}
-              onChange={(event, newInputValue) => {
-                onChangeHandler(newInputValue, event);
-              }}
-            />
+            {recordToEdit === null ?
+              <Autocomplete 
+                sx={{my: "10px", width: '100%'}}
+                id="free-solo"
+                freeSolo
+                autoHighlight
+                getOptionLabel={(option) => option.name || ""}
+                options={subscriptionNames}
+                filterOptions={(x) => x}
+                renderInput={(params) => <TextField {...errors.subscriptionName && {error: true, helperText: errors.subscriptionName}} {...params} label="Subscription Name"/>}
+                renderOption={(props, option) => (
+                  <Box key={option.id} className={classes.listItems} component="li" {...props}>
+                    <img onError={({currentTarget}) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src='https://cdn.icon-icons.com/icons2/1378/PNG/512/imagemissing_92832.png';
+                    }} 
+                    className={classes.subsIcons} alt={option.name + " logo"} 
+                    src={CDN_PATH + option.path.replace('/subscriptions-images', '')} />
+                    <Typography sx={{lineHeight: "28px", fontSize: "1.1rem"}} variant="caption">{option.name}</Typography>
+                  </Box>
+                  )}
+                onInputChange={(event, newInputValue) => {
+                  handleSearch(newInputValue);
+                }}
+                onChange={(event, newInputValue) => {
+                  onChangeHandler(newInputValue, event);
+                }}
+              /> :
+              <EnhancedInput 
+                disabled
+                sxProps={{my: "10px", width: '100%'}}
+                id="subscriptionName-edit" 
+                value={recordToEdit.subscriptionName} 
+                name="SubscriptionNameEdit" 
+                label="Subscription Name" 
+                onChange={handleInputChange} 
+              />
+            }
            </Grid>
            <Grid item xs={4}>
              <EnhancedInput 
@@ -197,11 +224,14 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
            <Grid item xs={12}>
             <LocalizationProvider dateAdapter={DateAdapter}>
               <DatePicker
-                label="Next Due Date"
-                disablePast
+                label="Due Date"
+                // disablePast
                 value={formValues.payingDueDate}
                 onChange={(newValue) => { onChangeHandler(newValue)}}
-                renderInput={(params) => <TextField sx={{width: '100%'}} {...params} {...errors.payingDueDate && {error: true, helperText: errors.payingDueDate}} />}
+                renderInput={(params) => 
+                <TextField 
+                  sx={{width: '100%'}} {...params} {...errors.payingDueDate && {error: true, helperText: errors.payingDueDate}} 
+                />}
               />
             </LocalizationProvider>
            </Grid>
@@ -230,12 +260,12 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
     return (
       <LoadingButton
         size="medium"
-        loading={addSubscriptionIsLoading}
+        loading={addSubscriptionIsLoading || updateSubscriptionIsLoading}
         onClick={handleSubmit}
         loadingIndicator="Loading..."
         variant="outlined"
       >
-        Create Subscription
+        {recordToEdit === null ? "Create Subscription": "Edit Subscription"}
       </LoadingButton>
     );
   }
@@ -247,17 +277,31 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes})
   }, [debouncedChangeHandler]);
 
   useEffect(() => {
-    if (addSubscriptionIsSuccess) {
+    if (addSubscriptionIsSuccess || updateSubscriptionIsSuccess) {
+      const variant: VariantType = 'success';
+      if (addSubscriptionIsSuccess) {
+        enqueueSnackbar('Subscription successfully added!', {variant});
+      } else {
+        enqueueSnackbar('Subscription successfully edited!', {variant});
+      }
       handleClose();
+    } 
+  }, [addSubscriptionIsSuccess, updateSubscriptionIsSuccess, handleClose, enqueueSnackbar]);
+
+  useEffect(() => {
+    if (recordToEdit != null) {
+      setFormValues({
+        ...recordToEdit
+      })
     }
-  }, [addSubscriptionIsSuccess, handleClose]);
+  }, [recordToEdit]);
 
   return (
     <Modal 
       open={open} 
       handleClose={handleClose} 
       children={renderFields} 
-      title="Add new subscription"
+      title={recordToEdit === null ? "Add new subscription" : "Edit Subscription"}
       button={loadingButton}
     />
   );

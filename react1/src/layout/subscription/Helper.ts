@@ -5,6 +5,7 @@ export const currencies:ICurrencies[] =[{label:"$",value:"USD"},{label:"€",val
 export const licensesStatus=[{label:"Active",value:1},{label:"Inactive",value:0}];
 
 export let initialFormValues: IFormState = {
+  id: null,
   subscriptionName: '',
   monthlyPrice: '',
   currency: "USD",
@@ -23,4 +24,12 @@ export const validatePrice = (price: string) => {
   price = price.trim();
   if (!price) return "This field is required";
   return "";
+}
+
+export const copyMatchingKeyValues = (target, source) => {
+  return Object.keys(target).forEach(key => {
+    if (source[key] !== undefined) {
+      target[key] = source[key];
+    }
+  })
 }

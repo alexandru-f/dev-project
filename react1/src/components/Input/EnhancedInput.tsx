@@ -7,7 +7,7 @@ interface DropdownOptions {
   value: string | number
 }
 
-interface IInputProps {
+interface IEnhancedInput {
   sxProps?: object,
   id: string,
   name: string,
@@ -18,11 +18,23 @@ interface IInputProps {
   dropdownItems?: Array<DropdownOptions>
   currencySymbol?: string;
   inputProps?: any;
+  disabled?: boolean;
 }
 
 
-const EnhancedInput:React.FC<IInputProps> = ({sxProps, id, error, name, label, value, onChange, dropdownItems, currencySymbol, inputProps}) => {
-  
+const EnhancedInput:React.FC<IEnhancedInput> = ({
+  sxProps,
+  id, 
+  error, 
+  name, 
+  label, 
+  value, 
+  onChange, 
+  dropdownItems, 
+  currencySymbol, 
+  inputProps, 
+  disabled
+}) => {  
   switch(name) {
     case 'monthlyPrice':
       return (
@@ -47,6 +59,7 @@ const EnhancedInput:React.FC<IInputProps> = ({sxProps, id, error, name, label, v
     default: 
     return (
       <TextField
+          disabled={disabled ? true: false}
           sx={sxProps}
           id={id}
           select={dropdownItems ? true: false}
@@ -54,7 +67,7 @@ const EnhancedInput:React.FC<IInputProps> = ({sxProps, id, error, name, label, v
           label={label}
           value={value}
           onChange={onChange}
-          InputProps={inputProps ? inputProps : false}
+          InputProps={inputProps ? inputProps : {}}
         >
           {dropdownItems && dropdownItems.map((option) => (
             <MenuItem key={option.value} value={option.value}>

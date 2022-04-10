@@ -26,3 +26,5 @@ export interface ISubNamesState {
   data: ISubscriptionType[];
   errorMessage: null;
 }
+
+export type DeleteOrModifySubscriptionType = ISubscription | number;

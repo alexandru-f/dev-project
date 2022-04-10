@@ -3,13 +3,14 @@ import SnackBar from "../../../../components/SnackBar/SnackBar";
 import EnhancedTable from "../../../../components/Table/EnhancedTable";
 import {IHeadCell} from '../../../../interface/Itable';
 import useStyles from "./SubscriptionTable.styles";
-import { ISubscription } from "../../../../interface/IApi";
+import { ISubscription , DeleteOrModifySubscriptionType} from "../../../../interface/IApi";
 
 interface IProps {
   filterData: string;
+  openInPopup: (subscription: DeleteOrModifySubscriptionType) => void
 }
 
-const SubscriptionsTable:React.FC<IProps> = ({filterData}) => {
+const SubscriptionsTable:React.FC<IProps> = ({filterData, openInPopup}) => {
 
   const classes = useStyles();
   const {data = [], isLoading, isError, isSuccess} = useGetSubscriptionsQuery();
@@ -34,13 +35,17 @@ const SubscriptionsTable:React.FC<IProps> = ({filterData}) => {
     );
   }
 
+  
   return ( 
-    <EnhancedTable 
-      classes={classes} 
-      snackbar={<ErrorSnackBar />} 
-      dataObject={{data: filterDataArray(data), isLoading: isLoading, isError: isError, isSuccess: isSuccess}} 
-      headCells={headCells}
-    />
+     <>
+      {isError && <ErrorSnackBar />}
+      <EnhancedTable 
+        classes={classes} 
+        dataObject={{data: filterDataArray(data), isLoading: isLoading, isSuccess: isSuccess}} 
+        headCells={headCells}
+        openInPopup={openInPopup}
+      />
+     </>
   )
 }
 
