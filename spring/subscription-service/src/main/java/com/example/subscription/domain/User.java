@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,25 +23,36 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Email must have a value")
-    @Email(message = "Wrong email format")
+    @NotBlank(message = "{email.not.empty}")
+    @Email(message = "{wrong.email.format}")
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @NotBlank(message = "Password field is required")
+    @NotBlank(message = "{password.not.empty}")
     private String password;
 
     @Transient
     private String confirmPassword;
 
-    @NotBlank(message = "Full Name is required")
-    private String fullName;
+    @NotBlank(message = "{firstName.not.empty}")
+    private String firstName;
+
+    @NotBlank(message = "{lastName.not.empty}")
+    private String lastName;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date createdAt;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date updatedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, optional = false)
+    private Membership membership;
+
+    @ElementCollection
+    @OrderBy
+    private List<Role> roles;
 
     @PrePersist
     protected void onCreate() {

@@ -101,7 +101,6 @@ const Navbar = () => {
     <AppBar elevation={1} position="static">
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" component="div" sx={{ flexGrow: 0 }}>
-          Company Name
         </Typography>
           <Box sx={{ display: {xs: "none", sm: "flex"} }}>
             <IconButton

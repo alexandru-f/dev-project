@@ -39,8 +39,11 @@ const SideBar = () => {
   }
   return (
     <Container 
-      disableGutters={useMediaQuery(theme.breakpoints.between("sm", "md"))} 
+      // disableGutters={useMediaQuery(theme.breakpoints.between("sm", "md"))} 
       className={classes.container}>
+        <Typography className={classes.company} variant="h6" component="div">
+          Company Name
+        </Typography>
         {displayMenu(MenuRoutes)}
     </Container>  
   );

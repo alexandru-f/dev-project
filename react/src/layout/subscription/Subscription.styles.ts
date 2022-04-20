@@ -19,11 +19,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   root: {
     '&.MuiContainer-root': {
-      paddingLeft: theme.spacing(6),
-      paddingRight: theme.spacing(6),
-      paddingTop: theme.spacing(6),
+      padding: theme.spacing(6),
       backgroundColor: "#eee",
-      height: "100vh"
+      minHeight: "100vh",
+      maxWidth: 'none'
     },
   },
   boxHeader: {

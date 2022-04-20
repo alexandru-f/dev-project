@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   container: {
-    paddingTop:theme.spacing(4),
+    paddingTop: theme.spacing(2),
     backgroundColor: theme.palette.primary.main,
     height: "100vh",
     [theme.breakpoints.between("sm", "md")]: {
@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   currentItemHightlight: {
     color: "rgb(25, 118, 210)"
+  },
+  company: {
+    marginBottom: '24px!important'
   }
 }));
 

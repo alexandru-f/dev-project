@@ -12,7 +12,19 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public final ResponseEntity<EntityNotFoundExceptionResponse> handleSubscriptionNameException(EntityNotFoundException ex, WebRequest request) {
-        EntityNotFoundExceptionResponse apiExceptionResponse = new EntityNotFoundExceptionResponse(ex.getMessage());
-        return new ResponseEntity<>(apiExceptionResponse, HttpStatus.BAD_REQUEST);
+        EntityNotFoundExceptionResponse apiResponse = new EntityNotFoundExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public final ResponseEntity<EmailAlreadyExistsExceptionResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, WebRequest request) {
+        EmailAlreadyExistsExceptionResponse apiResponse = new EmailAlreadyExistsExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CompanyNameAlreadyExistsException.class)
+    public final ResponseEntity<CompanyNameAlreadyExistsExceptionResponse> handleEmailAlreadyExistsException(CompanyNameAlreadyExistsException ex, WebRequest request) {
+        CompanyNameAlreadyExistsExceptionResponse apiResponse = new CompanyNameAlreadyExistsExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 }

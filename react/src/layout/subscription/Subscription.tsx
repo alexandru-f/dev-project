@@ -19,6 +19,7 @@ import { useSnackbar, VariantType } from 'notistack';
 
 const Subscription = () => {
 
+  /* State variables */
   const classes = useStyles();
   const {enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -33,6 +34,8 @@ const Subscription = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined);
   const [deleteSubscription, {isSuccess: isDeleteSuccess}] = useDeleteSubscriptionMutation({fixedCacheKey: 'share-delete-subs'});
+
+  /* Functions */
   const handleDialogClose = () => {
     setOpenDialog(false);
   }
@@ -68,6 +71,7 @@ const Subscription = () => {
         enqueueSnackbar('Subscription successfully deleted!', {variant});
       }
   }, [isDeleteSuccess, enqueueSnackbar]);
+
 
   return (
     <Container className={classes.root}>

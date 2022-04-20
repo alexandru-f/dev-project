@@ -1,13 +1,11 @@
 package com.example.subscription.exception;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class EntityNotFoundExceptionResponse {
+public class EmailAlreadyExistsExceptionResponse {
 
-    private String entityNotFound;
-
+    private String emailAlreadyExists;
 }

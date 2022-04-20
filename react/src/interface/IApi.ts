@@ -27,4 +27,13 @@ export interface ISubNamesState {
   errorMessage: null;
 }
 
+export interface CompanyRegistrationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyName: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export type DeleteOrModifySubscriptionType = ISubscription | number;
