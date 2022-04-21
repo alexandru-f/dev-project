@@ -23,12 +23,6 @@ const Subscription = () => {
   const classes = useStyles();
   const {enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const handleOpen = () => { setOpenModal(true); }
-  const handleClose = () => { 
-    setOpenModal(false); 
-    setRecordToEdit(null); 
-  }
-  
   const [filterData, setFilterData] = useState<string>("");
   const [recordToEdit, setRecordToEdit] = useState<IFormState | null>(null);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -39,6 +33,14 @@ const Subscription = () => {
   const handleDialogClose = () => {
     setOpenDialog(false);
   }
+
+  const handleOpen = () => { setOpenModal(true); }
+  
+  const handleClose = () => { 
+    setOpenModal(false); 
+    setRecordToEdit(null); 
+  }
+  
 
   const openInPopup = (subscriptionInfo: DeleteOrModifySubscriptionType) => {
     if (typeof subscriptionInfo !== 'number') {

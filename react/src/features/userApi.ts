@@ -5,7 +5,7 @@ export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery: fetchBaseQuery(),
     endpoints: (builder) => ({
-      signUpUser: builder.mutation<void, CompanyRegistrationData>({
+      signUpUserAndCompany: builder.mutation<void, CompanyRegistrationData>({
         query: (data) => ({
           url: '/api/v1/user/company/signup',
           method: 'POST',
@@ -16,6 +16,6 @@ export const userApi = createApi({
   });
 
 export const { 
-  useSignUpUserMutation
+  useSignUpUserAndCompanyMutation
 } = userApi;
 

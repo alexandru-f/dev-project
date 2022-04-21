@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -16,6 +16,20 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import {CompanyRegistrationData} from '../../interface/IApi'
+import { useSignUpUserAndCompanyMutation } from '../../features/userApi';
+import LoadingButton from '@mui/lab/LoadingButton';
+import useWindowDimensions from '../../app/useWindowDimensions';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import { useLottie } from "lottie-react";
+import animationSuccessData from '../../lotties/success-checkmark.json';
+
+interface PasswordVisibility {
+  showPassword: boolean;
+  showConfirmPassword: boolean;
+}
 
 function Copyright(props: any) {
   return (
@@ -32,35 +46,30 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
+const validationSchema = Yup.object().shape({
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  email: Yup.string()
+    .required('Email is required')
+    .email('Email is invalid'),
+  companyName: Yup.string().required('Company name is required'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters')
+    .max(40, 'Password must not exceed 40 characters'),
+  confirmPassword: Yup.string()
+    .required('Confirm Password is required')
+    .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
+});
+
+const lottieOptions = {
+  animationData: animationSuccessData,
+  loop: true,
+  autoplay: true
+}
+
 export default function SignUp() {
-
-
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //   });
-  // };
-
-
-  const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name is required'),
-    lastName: Yup.string().required('Last name is required'),
-    email: Yup.string()
-      .required('Email is required')
-      .email('Email is invalid'),
-    companyName: Yup.string().required('Company name is required'),
-    password: Yup.string()
-      .required('Password is required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(40, 'Password must not exceed 40 characters'),
-    confirmPassword: Yup.string()
-      .required('Confirm Password is required')
-      .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
-  });
-
+  
   const {
     register,
     handleSubmit,
@@ -69,9 +78,22 @@ export default function SignUp() {
     resolver: yupResolver(validationSchema)
   });
 
-  const {} = useSignUpUserMutation();
-
+  const [signUpUserAndCompany, {
+    isLoading,
+    isError
+  }] = useSignUpUserAndCompanyMutation();
+  const [passwordVisibility, setShowPasswordVisibility] = useState<PasswordVisibility>({
+    showPassword: false,
+    showConfirmPassword: false
+  });
+  const { height: windowHeight } = useWindowDimensions();
+  const elementRef = useRef<HTMLElement>(null);
+  const { View } = useLottie(lottieOptions, {maxWidth: '250px', margin: '0 auto'});
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  
+  /* Functions */
   const onSubmit = data => {
+    setIsSuccess(true);
     const requestBody: CompanyRegistrationData = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -80,11 +102,36 @@ export default function SignUp() {
       password: data.password,
       confirmPassword: data.confirmPassword
     }
+
+    // signUpUserAndCompanyHandler(requestBody);
   }
+
+  const signUpUserAndCompanyHandler = async (requestBody: CompanyRegistrationData) => {
+    await signUpUserAndCompany(requestBody);
+  }
+
+  const handleClickShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    let {name} = event.currentTarget;
+    
+    setShowPasswordVisibility(prevState => ({
+      ...prevState,
+      [name]: name === 'showPassword' ? !prevState.showPassword : !prevState.showConfirmPassword
+    }));
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+  useLayoutEffect(() => {
+    if (elementRef.current === null) return;
+    const divHeight = elementRef.current.clientHeight;
+    const lottieAnimationHeight = 250;
+    elementRef.current.style.marginTop = `${((windowHeight - (divHeight + lottieAnimationHeight + 70)) / 2)}px`;
+  }, [isSuccess, windowHeight]);
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
@@ -93,6 +140,19 @@ export default function SignUp() {
             alignItems: 'center',
           }}
         >
+          {isSuccess ? <Box ref={elementRef} sx={{textAlign: 'center'}} >
+            {isSuccess && View}
+            You have been successfully registered! 
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Go to Login
+            </Button>
+        </Box> :
+        <>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -156,12 +216,26 @@ export default function SignUp() {
                   required
                   fullWidth
                   label="Password"
-                  type="password"
+                  type={passwordVisibility.showPassword ? 'text' : 'password'}
                   id="password"
                   autoComplete="new-password"
                   {...register('password')}
                   error={errors.password ? true : false}
                   helperText={errors.password && errors.password.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                      <IconButton
+                        name="showPassword"
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {passwordVisibility.showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -169,12 +243,26 @@ export default function SignUp() {
                   required
                   fullWidth
                   label="Confirm Password"
-                  type="confirmPassword"
+                  type={passwordVisibility.showConfirmPassword ? 'text' : 'password'}
                   id="confirmPassword"
                   autoComplete="confirm-password"
                   {...register('confirmPassword')}
                   error={errors.confirmPassword ? true : false}
                   helperText={errors.confirmPassword && errors.confirmPassword.message}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                      <IconButton
+                        name="showConfirmPassword"
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {passwordVisibility.showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               {/* <Grid item xs={12}>
@@ -184,14 +272,24 @@ export default function SignUp() {
                 />
               </Grid> */}
             </Grid>
-            <Button
+            <LoadingButton
+              type="submit"
+              fullWidth
+              loading={isLoading}
+              loadingIndicator="Loading..."
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </LoadingButton>
+            {/* <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign Up
-            </Button>
+            </Button> */}
             {/* <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="#" variant="body2">
@@ -200,6 +298,7 @@ export default function SignUp() {
               </Grid>
             </Grid> */}
           </Box>
+          </>}
         </Box>
         {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>
