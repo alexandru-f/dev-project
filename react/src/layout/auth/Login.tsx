@@ -1,58 +1,37 @@
 import Avatar from '@mui/material/Avatar';
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
+import { useState } from "react";
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {CompanyRegistrationData} from '../../interface/IApi'
-import { useSignUpUserAndCompanyMutation } from '../../features/userApi';
+import {ILoginData} from '../../interface/IApi'
+import { useLoginUserMutation } from '../../features/userApi';
 import LoadingButton from '@mui/lab/LoadingButton';
-import useWindowDimensions from '../../app/useWindowDimensions';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
-import { useLottie } from "lottie-react";
-import animationSuccessData from '../../lotties/success-checkmark.json';
+import {useNavigate} from 'react-router-dom';
+import { useSnackbar, VariantType } from 'notistack';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../features/auth-slice';
 
 interface PasswordVisibility {
   showPassword: boolean;
   showConfirmPassword: boolean;
 }
-
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const theme = createTheme();
 
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
   email: Yup.string()
     .required('Email is required')
     .email('Email is invalid'),
-  companyName: Yup.string().required('Company name is required'),
   password: Yup.string()
     .required('Password is required')
     .min(6, 'Password must be at least 6 characters')
@@ -62,13 +41,8 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
 });
 
-const lottieOptions = {
-  animationData: animationSuccessData,
-  loop: true,
-  autoplay: true
-}
 
-export default function SignUp() {
+export default function Login() {
   
   const {
     register,
@@ -78,36 +52,39 @@ export default function SignUp() {
     resolver: yupResolver(validationSchema)
   });
 
-  const [signUpUserAndCompany, {
+  const [loginUser, {
+    isSuccess,
     isLoading,
     isError
-  }] = useSignUpUserAndCompanyMutation();
+  }] = useLoginUserMutation();
   const [passwordVisibility, setShowPasswordVisibility] = useState<PasswordVisibility>({
     showPassword: false,
     showConfirmPassword: false
   });
-  const { height: windowHeight } = useWindowDimensions();
-  const elementRef = useRef<HTMLElement>(null);
-  const { View } = useLottie(lottieOptions, {maxWidth: '250px', margin: '0 auto'});
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+
   /* Functions */
   const onSubmit = data => {
-    setIsSuccess(true);
-    const requestBody: CompanyRegistrationData = {
-      firstName: data.firstName,
-      lastName: data.lastName,
+    const requestBody: ILoginData = {
       email: data.email,
-      companyName: data.companyName,
       password: data.password,
       confirmPassword: data.confirmPassword
     }
 
-    // signUpUserAndCompanyHandler(requestBody);
+    signUpUserAndCompanyHandler(requestBody);
   }
 
-  const signUpUserAndCompanyHandler = async (requestBody: CompanyRegistrationData) => {
-    await signUpUserAndCompany(requestBody);
+  const signUpUserAndCompanyHandler = async (requestBody: ILoginData) => {
+    try {
+      const jwtToken = await loginUser(requestBody).unwrap();
+      dispatch(setCredentials(jwtToken));
+      handleHomeRedirect();
+    } catch (err) {
+        const variant: VariantType = 'error';
+        enqueueSnackbar('There was an error. Please try again!', {variant});
+    }
   }
 
   const handleClickShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -122,12 +99,10 @@ export default function SignUp() {
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
-  useLayoutEffect(() => {
-    if (elementRef.current === null) return;
-    const divHeight = elementRef.current.clientHeight;
-    const lottieAnimationHeight = 250;
-    elementRef.current.style.marginTop = `${((windowHeight - (divHeight + lottieAnimationHeight + 70)) / 2)}px`;
-  }, [isSuccess, windowHeight]);
+
+  const handleHomeRedirect = () => {
+    navigate("/");
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -140,53 +115,15 @@ export default function SignUp() {
             alignItems: 'center',
           }}
         >
-          {isSuccess ? <Box ref={elementRef} sx={{textAlign: 'center'}} >
-            {isSuccess && View}
-            You have been successfully registered! 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Go to Login
-            </Button>
-        </Box> :
-        <>
+        
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Log in
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  // name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                  {...register('firstName')}
-                  error={errors.firstName ? true : false}
-                  helperText={errors.firstName && errors.firstName.message}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  autoComplete="family-name"
-                  {...register('lastName')}
-                  error={errors.lastName ? true : false}
-                  helperText={errors.lastName && errors.lastName.message}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
@@ -197,18 +134,6 @@ export default function SignUp() {
                   {...register('email')}
                   error={errors.email ? true : false}
                   helperText={errors.email && errors.email.message}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="companyName"
-                  label="Company Name"
-                  autoComplete="company-name"
-                  {...register('companyName')}
-                  error={errors.companyName ? true : false}
-                  helperText={errors.companyName && errors.companyName.message}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -265,12 +190,6 @@ export default function SignUp() {
                   }}
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid> */}
             </Grid>
             <LoadingButton
               type="submit"
@@ -280,25 +199,9 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Log In
             </LoadingButton>
-            {/* <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button> */}
-            {/* <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid> */}
           </Box>
-          </>}
         </Box>
         {/* <Copyright sx={{ mt: 5 }} /> */}
       </Container>

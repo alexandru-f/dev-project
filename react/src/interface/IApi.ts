@@ -4,6 +4,35 @@ export interface ISubscriptionType {
   path: string;
 }
 
+export interface ILoginData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+type tokenInfo = {
+  accessToken: string;
+  refreshToken: string;
+  expirationDate: number;
+}
+
+export interface IAuthState {
+  user: string;
+  roles: Array<string>;
+  tokenInfo: tokenInfo;
+}
+
+export interface IDecodedJwt {
+  sub: string;
+  roles: Array<string>
+  exp: number;
+}
+
+export interface IJWTToken {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface ISubscription {
   id: number;
   subscriptionName: string;
@@ -27,7 +56,7 @@ export interface ISubNamesState {
   errorMessage: null;
 }
 
-export interface CompanyRegistrationData {
+export interface ICompanyRegistrationData {
   firstName: string;
   lastName: string;
   email: string;

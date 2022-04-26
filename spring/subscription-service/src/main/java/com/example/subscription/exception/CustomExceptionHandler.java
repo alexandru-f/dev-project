@@ -27,4 +27,17 @@ public class CustomExceptionHandler {
         CompanyNameAlreadyExistsExceptionResponse apiResponse = new CompanyNameAlreadyExistsExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BadCredentialsCustomException.class)
+    public final ResponseEntity<Object> badCredentialsCustomException(BadCredentialsCustomException ex, WebRequest request){
+        BadCredentialsCustomResponse exceptionResponse = new BadCredentialsCustomResponse(ex.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidJwtException.class)
+    public final ResponseEntity<Object> invalidJwtException(InvalidJwtException ex, WebRequest request){
+        InvalidJwtResponse exceptionResponse = new InvalidJwtResponse(ex.getMessage());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+    }
+
 }

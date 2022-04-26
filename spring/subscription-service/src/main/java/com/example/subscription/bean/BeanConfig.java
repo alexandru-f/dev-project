@@ -5,9 +5,11 @@ import com.example.subscription.repository.CompanyRepository;
 import com.example.subscription.repository.MembershipRepository;
 import com.example.subscription.repository.UserRepository;
 import com.example.subscription.service.UserService;
+import com.example.subscription.utility.JwtUtil;
 import com.example.subscription.utility.MapperService;
 import com.example.subscription.repository.SubscriptionRepository;
 import com.example.subscription.service.SubscriptionService;
+import com.example.subscription.utility.TokensUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,8 +28,8 @@ public class BeanConfig {
     }
 
     @Bean
-    UserService userService(UserRepository userRepository, CompanyRepository companyRepository, MembershipRepository membershipRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        return new UserService(userRepository, companyRepository, membershipRepository, bCryptPasswordEncoder);
+    UserService userService(UserRepository userRepository, CompanyRepository companyRepository, MembershipRepository membershipRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TokensUtil tokensUtil, JwtUtil jwtUtil) {
+        return new UserService(userRepository, companyRepository, membershipRepository, bCryptPasswordEncoder, tokensUtil, jwtUtil);
     }
 
     @Bean
