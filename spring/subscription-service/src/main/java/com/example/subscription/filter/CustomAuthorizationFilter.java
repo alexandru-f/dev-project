@@ -19,6 +19,7 @@ import java.util.*;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -39,6 +40,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
+                    System.out.println("IN CORRECT");
                     String token = authorizationHeader.substring("Bearer ".length());
                     DecodedJWT decodedJWT = tokensUtil.createDecodedJWT(token);
                     String username = decodedJWT.getSubject();
@@ -53,11 +55,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch(Exception exception) {
+                    System.out.println("IN EXCEPTION");
                     response.setHeader("error", exception.getMessage());
-                    response.setStatus(FORBIDDEN.value());
+                    response.setStatus(UNAUTHORIZED.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
                     Map<String, String> error = new HashMap<>();
-                    error.put("error_message", exception.getMessage());
+                    error.put("message", "You are not logged in");
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
             } else {

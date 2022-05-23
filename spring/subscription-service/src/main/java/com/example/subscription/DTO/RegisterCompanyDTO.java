@@ -1,6 +1,5 @@
 package com.example.subscription.DTO;
 
-import com.example.subscription.custominterface.LoginAndRegisterPassword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RegisterCompanyDTO implements LoginAndRegisterPassword {
+public class RegisterCompanyDTO {
 
     @NotBlank(message = "{firstName.not.empty}")
     private String firstName;

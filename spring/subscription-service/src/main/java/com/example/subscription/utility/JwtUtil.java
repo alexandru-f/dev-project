@@ -7,11 +7,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.subscription.config.AppConstants.ACCESS_TOKEN_LIFETIME;
+import static com.example.subscription.config.AppConstants.REFRESH_TOKEN_LIFETIME;
 import static com.example.subscription.security.SecurityConstants.SECRET;
 
 
@@ -22,7 +23,7 @@ public class JwtUtil {
         Algorithm algorithm = Algorithm.HMAC256(SECRET.getBytes());
         return JWT.create()
                 .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .withExpiresAt(ACCESS_TOKEN_LIFETIME)
                 .withClaim("roles", user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
                 .sign(algorithm);
     }
@@ -33,13 +34,13 @@ public class JwtUtil {
 
         String accessToken = JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                .withExpiresAt(ACCESS_TOKEN_LIFETIME)
                 .withClaim("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .withExpiresAt(REFRESH_TOKEN_LIFETIME)
                 .sign(algorithm);
 
         Map<String, String> tokens = new HashMap<>();
