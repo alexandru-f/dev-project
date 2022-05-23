@@ -4,27 +4,33 @@ export interface ISubscriptionType {
   path: string;
 }
 
-export interface ILoginData {
+
+export interface ISignInData {
   email: string;
   password: string;
+}
+
+export interface ISignUpData extends ISignInData{
   confirmPassword: string;
 }
 
 type tokenInfo = {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
   expirationDate: number;
 }
 
 export interface IAuthState {
-  user: string;
-  roles: Array<string>;
-  tokenInfo: tokenInfo;
+  isAuthenticated: boolean;
+  user: IDecodedJwt;
 }
-
+interface DecodedJwtPropertyName {
+  name?: string;
+  sub?: string;
+}
 export interface IDecodedJwt {
   sub: string;
-  roles: Array<string>
+  roles: Array<string>;
   exp: number;
 }
 

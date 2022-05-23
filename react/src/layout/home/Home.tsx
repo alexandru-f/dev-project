@@ -1,16 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { selectCurrentUser } from "../../features/auth-slice";
 
-
-const Dashboard = () => {
+const Home = () => {
   
-
   return (
     <>
-      Dashboard
+    hello
     </>
   );
 }
 
-export default Dashboard;
+export default Home;

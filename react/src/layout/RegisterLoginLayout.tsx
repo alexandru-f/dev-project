@@ -6,7 +6,7 @@ import Navbar from './navbar/Navbar';
 const RegisterLoginLayout = () => {
   return (
     <>
-    <Navbar />
+    {/* <Navbar /> */}
     <Box sx={{ display: 'flex' }}>
       <Box
         component="main"

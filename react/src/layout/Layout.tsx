@@ -3,15 +3,22 @@ import Grid from '@mui/material/Grid'
 import {Outlet} from 'react-router';
 import Navbar from './navbar/Navbar';
 import SideBar from './sidebar/Sidebar';
-
+import { useLocation } from 'react-router-dom';
 const drawerWidth = 240;
 
 const Layout = () => {
+
+  const pathName = useLocation().pathname;
+  const notProtectedRoutes = ['/signin', '/signup'];
+  const isRouteProtected = () => {
+    return !notProtectedRoutes.includes(pathName);
+  }
+
+
   return (
     <>
-    <Navbar />
     <Box sx={{ display: 'flex' }}>
-      <Drawer
+      {isRouteProtected() ? <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -24,7 +31,7 @@ const Layout = () => {
         anchor="left"
       >
         <SideBar />
-      </Drawer>
+      </Drawer> : ''}
       <Box
         component="main"
         sx={{ flexGrow: 1}}

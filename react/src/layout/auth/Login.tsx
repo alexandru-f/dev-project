@@ -1,5 +1,5 @@
 import Avatar from '@mui/material/Avatar';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -10,7 +10,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {ILoginData} from '../../interface/IApi'
+import {IAuthState, IDecodedJwt, ISignInData} from '../../interface/IApi'
 import { useLoginUserMutation } from '../../features/userApi';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -21,11 +21,9 @@ import {useNavigate} from 'react-router-dom';
 import { useSnackbar, VariantType } from 'notistack';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../features/auth-slice';
+import {isFetchBaseQueryError} from '../../Helpers/Helpers';
+import jwt_decode from 'jwt-decode';
 
-interface PasswordVisibility {
-  showPassword: boolean;
-  showConfirmPassword: boolean;
-}
 const theme = createTheme();
 
 const validationSchema = Yup.object().shape({
@@ -36,14 +34,9 @@ const validationSchema = Yup.object().shape({
     .required('Password is required')
     .min(6, 'Password must be at least 6 characters')
     .max(40, 'Password must not exceed 40 characters'),
-  confirmPassword: Yup.string()
-    .required('Confirm Password is required')
-    .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
 });
 
-
 export default function Login() {
-  
   const {
     register,
     handleSubmit,
@@ -57,43 +50,42 @@ export default function Login() {
     isLoading,
     isError
   }] = useLoginUserMutation();
-  const [passwordVisibility, setShowPasswordVisibility] = useState<PasswordVisibility>({
-    showPassword: false,
-    showConfirmPassword: false
-  });
+  const [passwordVisibility, setShowPasswordVisibility] = useState<boolean>(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
   /* Functions */
   const onSubmit = data => {
-    const requestBody: ILoginData = {
+    const requestBody: ISignInData = {
       email: data.email,
       password: data.password,
-      confirmPassword: data.confirmPassword
     }
 
-    signUpUserAndCompanyHandler(requestBody);
+    signInUser(requestBody);
   }
 
-  const signUpUserAndCompanyHandler = async (requestBody: ILoginData) => {
+  const signInUser = async (requestBody: ISignInData) => {
     try {
       const jwtToken = await loginUser(requestBody).unwrap();
+      localStorage.setItem('refreshToken', jwtToken.refreshToken);
+      sessionStorage.setItem('accessToken', jwtToken.accessToken);
       dispatch(setCredentials(jwtToken));
       handleHomeRedirect();
     } catch (err) {
+      if (err && isFetchBaseQueryError(err)) {
         const variant: VariantType = 'error';
-        enqueueSnackbar('There was an error. Please try again!', {variant});
+        if (err.status >= 500) {  
+          enqueueSnackbar('There was a server error. Please try again!', {variant});
+        } else {  
+          enqueueSnackbar('Incorrect email or password', {variant})
+        }
+      }
     }
   }
 
-  const handleClickShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    let {name} = event.currentTarget;
-    
-    setShowPasswordVisibility(prevState => ({
-      ...prevState,
-      [name]: name === 'showPassword' ? !prevState.showPassword : !prevState.showConfirmPassword
-    }));
+  const handleClickShowPassword = () => {
+    setShowPasswordVisibility(prevState => !prevState);
   };
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -101,7 +93,7 @@ export default function Login() {
   };
 
   const handleHomeRedirect = () => {
-    navigate("/");
+    navigate("/home");
   }
 
   return (
@@ -141,7 +133,7 @@ export default function Login() {
                   required
                   fullWidth
                   label="Password"
-                  type={passwordVisibility.showPassword ? 'text' : 'password'}
+                  type={passwordVisibility ? 'text' : 'password'}
                   id="password"
                   autoComplete="new-password"
                   {...register('password')}
@@ -156,34 +148,7 @@ export default function Login() {
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                       >
-                        {passwordVisibility.showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                    )
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Confirm Password"
-                  type={passwordVisibility.showConfirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
-                  autoComplete="confirm-password"
-                  {...register('confirmPassword')}
-                  error={errors.confirmPassword ? true : false}
-                  helperText={errors.confirmPassword && errors.confirmPassword.message}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                      <IconButton
-                        name="showConfirmPassword"
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {passwordVisibility.showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        {passwordVisibility ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                     )

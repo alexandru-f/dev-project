@@ -1,14 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IFormState } from '../interface/IModalContent'
 import {ISubscription} from '../interface/IApi'
+import customFetchBase from "./customFetchBase";
 
 export const subscriptionApi = createApi({
     reducerPath: "subscriptionApi",
-    baseQuery: fetchBaseQuery(),
+    baseQuery: customFetchBase,
     tagTypes: ['Subscription'],
     endpoints: (builder) => ({
       getSubscriptions: builder.query<ISubscription[], void>({
-        query: () => '/api/v1/subscription',
+        query: () => '/subscription',
         providesTags: (result) =>
           result
             ? [
@@ -29,7 +30,7 @@ export const subscriptionApi = createApi({
       
       deleteSubscription: builder.mutation<void, number>({
         query: (id) => ({
-          url: `/api/v1/subscription/${id}`,
+          url: `/subscription/${id}`,
           method: 'DELETE',
         }),
         invalidatesTags: (result, error, arg) => [{ type: 'Subscription', id: arg }]
@@ -37,7 +38,7 @@ export const subscriptionApi = createApi({
 
       updateSubscription: builder.mutation<void, IFormState & Pick<IFormState, 'id'>>({
         query: (data) => ({
-          url: `api/v1/subscription/${data.id}`,
+          url: `/subscription/${data.id}`,
           method: 'PUT',
           body: data
         }),

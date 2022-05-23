@@ -3,6 +3,7 @@ import {subscriptionNamesApi} from '../features/subscriptionNamesApi'
 import { subscriptionApi } from "../features/subscriptionApi";
 import { userApi } from "../features/userApi";
 import authReducer from '../features/auth-slice';
+import { setupListeners } from "@reduxjs/toolkit/dist/query";
 
 export const store = configureStore({
   reducer: {
@@ -20,3 +21,4 @@ export const store = configureStore({
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
+setupListeners(store.dispatch);

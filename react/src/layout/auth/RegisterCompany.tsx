@@ -25,11 +25,7 @@ import animationSuccessData from '../../lotties/success-checkmark.json';
 import {useNavigate} from 'react-router-dom';
 import { useSnackbar, VariantType } from 'notistack';
 import {isFetchBaseQueryError} from '../../Helpers/Helpers';
-
-interface PasswordVisibility {
-  showPassword: boolean;
-  showConfirmPassword: boolean;
-}
+import { PasswordAndConfirmPasswordVisibility } from '../../interface/IAuth';
 
 function Copyright(props: any) {
   return (
@@ -78,7 +74,7 @@ export default function SignUp() {
     isSuccess,
     isLoading,
   }] = useSignUpUserAndCompanyMutation();
-  const [passwordVisibility, setShowPasswordVisibility] = useState<PasswordVisibility>({
+  const [passwordVisibility, setShowPasswordVisibility] = useState<PasswordAndConfirmPasswordVisibility>({
     showPassword: false,
     showConfirmPassword: false
   });
@@ -120,7 +116,7 @@ export default function SignUp() {
   };
 
   const handleRedirect = () => {
-    navigate("/login");
+    navigate("/signin");
   }
 
   useLayoutEffect(() => {
