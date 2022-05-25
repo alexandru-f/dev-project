@@ -8,13 +8,16 @@ import {ThemeProvider} from '@mui/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { SnackbarProvider } from 'notistack';
+import AuthMiddleware from './Helpers/AuthMiddleware'
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={1}>
+          <AuthMiddleware>
           <App />
+          </AuthMiddleware>
         </SnackbarProvider>
       </ThemeProvider>
     </Provider>

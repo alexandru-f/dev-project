@@ -5,6 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 public class AppConstants {
 
-    public static final Date ACCESS_TOKEN_LIFETIME = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15));
-    public static final Date REFRESH_TOKEN_LIFETIME = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(60));
+    public static final long ACCESS_TOKEN_LIFETIME = TimeUnit.MINUTES.toMillis(2);
+    public static final long REFRESH_TOKEN_LIFETIME = TimeUnit.MINUTES.toMillis(4);
 }

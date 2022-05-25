@@ -1,31 +1,26 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ICompanyRegistrationData, ISignInData, IJWTToken, IDecodedJwt } from "../interface/IApi";
-import customFetchBase from "./customFetchBase";
-
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { IUser } from '../interface/IApi';
+import { setUser } from './auth-slice';
+import customFetchBase from './customFetchBase';
 
 export const userApi = createApi({
-    reducerPath: "userApi",
-    baseQuery: customFetchBase,
-    endpoints: (builder) => ({
-      signUpUserAndCompany: builder.mutation<void, ICompanyRegistrationData>({
-        query: (data) => ({
-          url: '/user/company/signup',
-          method: 'POST',
-          body: data,
-        }),
-      }),
-      loginUser: builder.mutation<IJWTToken, ISignInData>({
-        query: (data) => ({
-          url: '/user/login',
-          method: 'POST',
-          body: data,
-        }),
-      }),
+  reducerPath: 'userApi',
+  baseQuery: customFetchBase,
+  tagTypes: ['User'],
+  endpoints: (builder) => ({
+    getCurrentUser: builder.query<IUser, null>({
+      query() {
+        return {
+          url: '/user/getUserInfo',
+          credentials: 'include',
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setUser(data));
+        } catch (error) {}
+      },
     }),
-  });
-
-export const { 
-  useLoginUserMutation,
-  useSignUpUserAndCompanyMutation
-} = userApi;
-
+  }),
+});

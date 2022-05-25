@@ -10,8 +10,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {IAuthState, IDecodedJwt, ISignInData} from '../../interface/IApi'
-import { useLoginUserMutation } from '../../features/userApi';
+import { IDecodedJwt, ISignInData} from '../../interface/IApi'
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
@@ -20,9 +19,9 @@ import IconButton from '@mui/material/IconButton';
 import {useNavigate} from 'react-router-dom';
 import { useSnackbar, VariantType } from 'notistack';
 import { useDispatch } from 'react-redux';
-import { setCredentials } from '../../features/auth-slice';
-import {isFetchBaseQueryError} from '../../Helpers/Helpers';
 import jwt_decode from 'jwt-decode';
+import { useLoginUserMutation } from '../../features/authApi';
+import { isFetchBaseQueryError } from '../../Helpers/Helpers';
 
 const theme = createTheme();
 
@@ -48,7 +47,8 @@ export default function Login() {
   const [loginUser, {
     isSuccess,
     isLoading,
-    isError
+    isError,
+    error
   }] = useLoginUserMutation();
   const [passwordVisibility, setShowPasswordVisibility] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -65,23 +65,8 @@ export default function Login() {
     signInUser(requestBody);
   }
 
-  const signInUser = async (requestBody: ISignInData) => {
-    try {
-      const jwtToken = await loginUser(requestBody).unwrap();
-      localStorage.setItem('refreshToken', jwtToken.refreshToken);
-      sessionStorage.setItem('accessToken', jwtToken.accessToken);
-      dispatch(setCredentials(jwtToken));
-      handleHomeRedirect();
-    } catch (err) {
-      if (err && isFetchBaseQueryError(err)) {
-        const variant: VariantType = 'error';
-        if (err.status >= 500) {  
-          enqueueSnackbar('There was a server error. Please try again!', {variant});
-        } else {  
-          enqueueSnackbar('Incorrect email or password', {variant})
-        }
-      }
-    }
+  const signInUser = (requestBody: ISignInData) => {
+      loginUser(requestBody);
   }
 
   const handleClickShowPassword = () => {
@@ -95,7 +80,22 @@ export default function Login() {
   const handleHomeRedirect = () => {
     navigate("/home");
   }
-
+  useEffect(() => {
+    if (isSuccess) {
+      handleHomeRedirect();
+    }
+    
+    if (isError) {
+      if (error && isFetchBaseQueryError(error)) {
+        const variant: VariantType = 'error';
+        if (error.status >= 500) {  
+          enqueueSnackbar('There was a server error. Please try again!', {variant});
+        } else {  
+          enqueueSnackbar('Incorrect email or password', {variant})
+        }
+      } 
+    }
+  }, [isLoading]);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

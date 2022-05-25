@@ -7,12 +7,11 @@ export interface PasswordVisibility {
 export interface PasswordAndConfirmPasswordVisibility extends PasswordVisibility {
   showConfirmPassword: boolean;
 }
-export enum Role {
+export enum ROLE {
   ADMIN = 'ROLE_ADMINISTRATOR',
   USER = 'ROLE_USER',
 }
 export interface IPrivateRouteProps {
-  component: React.ComponentType,
-  path?: string;
-  roles: Array<Role>
+  component: React.ReactElement,
+  roles: Array<ROLE>
 }

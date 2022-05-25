@@ -1,3 +1,4 @@
+
 export interface ISubscriptionType {
   id: number;
   name: string;
@@ -14,20 +15,19 @@ export interface ISignUpData extends ISignInData{
   confirmPassword: string;
 }
 
-type tokenInfo = {
-  accessToken: string | null;
-  refreshToken: string | null;
-  expirationDate: number;
+
+export interface IUserState{
+ user: IUser | null;
 }
 
-export interface IAuthState {
-  isAuthenticated: boolean;
-  user: IDecodedJwt;
+export interface IUser {
+  firstName: string;
+  lastName: string;
+  company: string;
+  email: string;
+  roles: Array<string>;
 }
-interface DecodedJwtPropertyName {
-  name?: string;
-  sub?: string;
-}
+
 export interface IDecodedJwt {
   sub: string;
   roles: Array<string>;
@@ -36,7 +36,6 @@ export interface IDecodedJwt {
 
 export interface IJWTToken {
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface ISubscription {

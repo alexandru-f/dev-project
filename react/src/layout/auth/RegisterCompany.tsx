@@ -13,7 +13,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import {ICompanyRegistrationData} from '../../interface/IApi'
-import { useSignUpUserAndCompanyMutation } from '../../features/userApi';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useWindowDimensions from '../../app/useWindowDimensions';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -26,6 +25,7 @@ import {useNavigate} from 'react-router-dom';
 import { useSnackbar, VariantType } from 'notistack';
 import {isFetchBaseQueryError} from '../../Helpers/Helpers';
 import { PasswordAndConfirmPasswordVisibility } from '../../interface/IAuth';
+import { useSignUpUserAndCompanyMutation } from '../../features/authApi';
 
 function Copyright(props: any) {
   return (

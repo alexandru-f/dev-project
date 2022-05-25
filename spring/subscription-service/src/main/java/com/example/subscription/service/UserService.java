@@ -2,6 +2,7 @@ package com.example.subscription.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.subscription.DTO.RegisterCompanyDTO;
+import com.example.subscription.DTO.UserResponse;
 import com.example.subscription.domain.Company;
 import com.example.subscription.domain.Membership;
 import com.example.subscription.domain.Role;
@@ -53,26 +54,32 @@ public class UserService {
         //create membership
         createMembership(user, company);
     }
-
-    public Map<String, String> generateAccessTokenFromRefreshToken(String authorizationHeader) {
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+    public Optional<UserResponse> getUserInfo(String userEmail) {
+        Optional<Membership> membershipOptional = membershipRepository.getCompleteUserInfo(userEmail);
+        if (membershipOptional.isPresent()) {
+            Membership userFullInfo = membershipOptional.get();
+            UserResponse userResponse = UserResponse.builder()
+                    .firstName(userFullInfo.getUser().getFirstName())
+                    .lastName(userFullInfo.getUser().getLastName())
+                    .email(userFullInfo.getUser().getEmail())
+                    .company(userFullInfo.getCompany().getName())
+                    .roles(userFullInfo.getUser().getRoles())
+                    .build();
+            return Optional.of(userResponse);
+        }
+        return Optional.empty();
+    }
+    public String generateAccessTokenFromRefreshToken(String token) {
             try {
-                String refreshToken = authorizationHeader.substring("Bearer ".length());
-                DecodedJWT decodedJWT = tokensUtil.createDecodedJWT(refreshToken);
+                DecodedJWT decodedJWT = tokensUtil.createDecodedJWT(token);
                 String username = decodedJWT.getSubject();
-                User user = getUserByEmail(username);
-                String accessToken = jwtUtil.generateAccessToken(user);
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("accessToken", accessToken);
-                tokens.put("refreshToken", refreshToken);
-                return tokens;
+                Optional<User> userOptional = getUserByEmail(username);
+                User user = userOptional.orElseThrow(() ->  new EmailAlreadyExistsException("Email already exists"));
+                return jwtUtil.generateAccessToken(user);
             } catch(Exception exception) {
                 throw new InvalidJwtException(exception.getMessage());
             }
-        } else {
-            throw new RuntimeException("Refresh token is missing");
         }
-    }
 
     private Company createCompany(RegisterCompanyDTO registerCompanyDTO) {
         Company company = Company.builder()
@@ -109,10 +116,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    private User getUserByEmail(String email) {
-        return userRepository.findByEmail(email.toLowerCase())
-                .orElseThrow(() -> new EmailAlreadyExistsException("Email already exists"));
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email.toLowerCase());
     }
+
 
     private boolean isEmailAlreadyInUse(String email) {
         Optional<User> user = userRepository.findByEmail(email);

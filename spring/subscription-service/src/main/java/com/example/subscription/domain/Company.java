@@ -1,17 +1,16 @@
 package com.example.subscription.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,8 +26,9 @@ public class Company {
     private String masterEmail;
     private boolean isActive;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Membership> memberships;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    private List<Membership> membership;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date createdAt;

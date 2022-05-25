@@ -10,8 +10,11 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MoreIcon from "@mui/icons-material/MoreVert";
-
 import React, { useState } from 'react';
+import { useAppSelector } from '../../app/hooks';
+import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 const Navbar = () => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -22,6 +25,8 @@ const Navbar = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+
+  const user = useAppSelector((state) => state.auth.user);
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -102,15 +107,16 @@ const Navbar = () => {
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" component="div" sx={{ flexGrow: 0 }}>
         </Typography>
+          {user != null ? 
           <Box sx={{ display: {xs: "none", sm: "flex"} }}>
-            <IconButton
+            {/* <IconButton
               size="large"
               color="inherit"
             >
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
             size="large"
             edge="end"
@@ -119,7 +125,16 @@ const Navbar = () => {
             >
               <AccountCircle />
             </IconButton>
-          </Box>
+          </Box> : 
+          <Box sx={{ display: {xs: "none", sm: "flex"} }}>
+            <Button 
+              className={classes.button}
+              variant="contained"
+              href="/signin"
+            >
+                Sign in
+            </Button>
+          </Box>}
           <Box sx={{display: {xs: "flex", sm: "none"}}}>
             <IconButton
               size="large"

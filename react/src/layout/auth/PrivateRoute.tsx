@@ -1,25 +1,39 @@
+import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { selectCurrentUser, selectIsAuthenticated } from "../../features/auth-slice";
+import { Navigate, useLocation } from "react-router-dom";
+import { userApi } from "../../features/userApi";
 import { IPrivateRouteProps } from "../../interface/IAuth";
 import AccessDenied from "./AccessDenied";
-
+import FullScreenLoader from "../../components/FullScreenLoader/FullScreenLoader";
 
 
 const PrivateRoute:React.FC<IPrivateRouteProps> = ({component: RouteComponent, roles}) => {
-  
-  const user = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const userHasRequiredRole = user && roles.filter(e => user.roles.includes(e)).length > 0 ? true : false;
-  if (isAuthenticated && userHasRequiredRole) {
-    return <RouteComponent />
-  }
-  
-  if (isAuthenticated && !userHasRequiredRole) {
-    return <AccessDenied />
-  }
+  const [cookies] = useCookies(['loggedIn']);
+  const location = useLocation(); 
+  const {isLoading, isFetching} = userApi.endpoints.getCurrentUser.useQuery(null, {
+    skip: false,
+    refetchOnMountOrArgChange: true
+  });
 
-  return <Navigate to="/login" />
+  const loading = isLoading || isFetching;
+  const user = userApi.endpoints.getCurrentUser.useQueryState(null, {
+    selectFromResult: ({data}) => data
+  });
+  
+  if (loading) {
+    return <FullScreenLoader />
+  }
+  console.log(cookies.loggedIn);
+  console.log(user);
+  
+  return (cookies.loggedIn || user) &&
+    (roles.some(e => user?.roles.includes(e)) ? true : false) ? (
+      RouteComponent
+  ) : cookies.loggedIn && user ? (
+    <Navigate to='/unauthorized' state={{ from: location }} replace />
+  ) : (
+    <Navigate to='/signin' state={{ from: location }} replace />
+  );
 
 }
 

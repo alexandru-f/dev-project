@@ -30,7 +30,7 @@ const customFetchBase: BaseQueryFn<
 
       try {
         const refreshResult = await baseQuery(
-          { credentials: 'include', url: '/token/refresh' },
+          { credentials: 'include', url: '/user/token/refresh' },
           api,
           extraOptions
         );
@@ -40,7 +40,7 @@ const customFetchBase: BaseQueryFn<
           result = await baseQuery(args, api, extraOptions);
         } else {
           api.dispatch(logOut());
-          window.location.href = '/login';
+          window.location.href = '/signin';
         }
       } finally {
         // release must be called once the mutex should be released again.

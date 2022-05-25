@@ -9,7 +9,10 @@ export const subscriptionApi = createApi({
     tagTypes: ['Subscription'],
     endpoints: (builder) => ({
       getSubscriptions: builder.query<ISubscription[], void>({
-        query: () => '/subscription',
+        query: () => ({
+            url: '/subscription', 
+            credentials: 'include'
+        }),
         providesTags: (result) =>
           result
             ? [
@@ -23,6 +26,7 @@ export const subscriptionApi = createApi({
         query: (data) => ({
           url: '/api/v1/subscription',
           method: 'POST',
+          credentials: 'include',
           body: data,
         }),
         invalidatesTags: [{type: 'Subscription', id: 'LIST'}]
@@ -32,6 +36,7 @@ export const subscriptionApi = createApi({
         query: (id) => ({
           url: `/subscription/${id}`,
           method: 'DELETE',
+          credentials: 'include'
         }),
         invalidatesTags: (result, error, arg) => [{ type: 'Subscription', id: arg }]
       }),
@@ -40,6 +45,7 @@ export const subscriptionApi = createApi({
         query: (data) => ({
           url: `/subscription/${data.id}`,
           method: 'PUT',
+          credentials: 'include',
           body: data
         }),
         invalidatesTags: (result, error, arg) => [{ type: 'Subscription', id: arg.id! }]

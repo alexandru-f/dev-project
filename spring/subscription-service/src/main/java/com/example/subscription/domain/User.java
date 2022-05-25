@@ -1,10 +1,9 @@
 package com.example.subscription.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -13,7 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,24 +40,17 @@ public class User {
     @NotBlank(message = "{lastName.not.empty}")
     private String lastName;
 
-    @JsonFormat(pattern = "yyyy-mm-dd")
-    private Date createdAt;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, optional = false)
+    @JsonManagedReference
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = false)
     private Membership membership;
 
     @ElementCollection
     @OrderBy
     private List<Role> roles;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
 
     @PreUpdate
     protected void onUpdate() {

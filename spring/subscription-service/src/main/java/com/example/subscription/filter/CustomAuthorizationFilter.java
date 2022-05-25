@@ -1,6 +1,7 @@
 package com.example.subscription.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.subscription.utility.CookieUtil;
 import com.example.subscription.utility.TokensUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import static com.example.subscription.config.AppConstants.ACCESS_TOKEN_LIFETIME;
+import static com.example.subscription.config.AppConstants.REFRESH_TOKEN_LIFETIME;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -28,21 +30,31 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private TokensUtil tokensUtil;
 
+    @Autowired
+    private CookieUtil helper;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         /*
          * If user tries to login, continue process without doing anything
          * */
-        if (request.getServletPath().equals("/api/v1/user/login") || request.getServletPath().equals("/api/v1/user/token/refresh")) {
+        if (request.getServletPath().equals("/api/v1/user/login")
+                || request.getServletPath().equals("/api/v1/user/token/refresh")
+                || request.getServletPath().equals("/api/v1/user/company/signup")) {
             filterChain.doFilter(request, response);
         } else {
+            String accessToken = null;
             String authorizationHeader = request.getHeader(AUTHORIZATION);
+            String cookieValue = helper.getCookieValue("accessToken").orElse(null);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                accessToken = authorizationHeader.substring("Bearer ".length());
+            } else if (cookieValue != null) {
+                accessToken = cookieValue;
+            }
+            if (accessToken != null) {
                 try {
-                    System.out.println("IN CORRECT");
-                    String token = authorizationHeader.substring("Bearer ".length());
-                    DecodedJWT decodedJWT = tokensUtil.createDecodedJWT(token);
+                    DecodedJWT decodedJWT = tokensUtil.createDecodedJWT(accessToken);
                     String username = decodedJWT.getSubject();
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -55,7 +67,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch(Exception exception) {
-                    System.out.println("IN EXCEPTION");
                     response.setHeader("error", exception.getMessage());
                     response.setStatus(UNAUTHORIZED.value());
                     response.setContentType(APPLICATION_JSON_VALUE);
@@ -64,7 +75,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
             } else {
-                filterChain.doFilter(request, response);
+                response.setStatus(UNAUTHORIZED.value());
+                response.setContentType(APPLICATION_JSON_VALUE);
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "You are not logged in");
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
             }
         }
     }

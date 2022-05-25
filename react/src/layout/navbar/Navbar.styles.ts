@@ -11,6 +11,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   toolbar: {
     justifyContent: "space-between"
+  },
+  button: {
+    '&.MuiButton-root': {
+      background: '#1976d2',
+      color: 'rgb(255, 255, 255)'
+    }
   }
 }));
 
