@@ -5,6 +5,7 @@ import { userApi } from "../features/userApi";
 import authReducer from '../features/auth-slice';
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { authApi } from "../features/authApi";
+import {refreshApi} from "../features/refreshApi";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     [subscriptionApi.reducerPath]: subscriptionApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
+    [refreshApi.reducerPath]: refreshApi.reducer,
     auth: authReducer
   },
   middleware: (getDefaultMiddleware) => 
@@ -20,7 +22,8 @@ export const store = configureStore({
       subscriptionNamesApi.middleware,
       subscriptionApi.middleware,
       userApi.middleware,
-      authApi.middleware
+      authApi.middleware,
+      refreshApi.middleware
     ]
   )
 });

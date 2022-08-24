@@ -1,12 +1,15 @@
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../app/hooks";
-import { selectCurrentUser } from "../../features/auth-slice";
+import { Container, Grid } from "@mui/material";
+import { Box } from "@mui/system";
 
 const Home = () => {
   
   return (
     <>
-    hello
+      <Container>
+        <Grid container spacing={0}>
+          Something
+        </Grid>
+      </Container>
     </>
   );
 }

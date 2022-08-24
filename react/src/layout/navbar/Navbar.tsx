@@ -10,24 +10,76 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import React, { useState } from 'react';
-import { useAppSelector } from '../../app/hooks';
-import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { logOut } from '../../features/auth-slice';
+import { useLogoutUserMutation } from '../../features/authApi';
+import { useNavigate } from 'react-router-dom';
+import { extractFirstLetter, isFetchBaseQueryError } from '../../Helpers/Helpers';
+import { useSnackbar, VariantType } from 'notistack';
+import { Avatar, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-const Navbar = () => {
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      content: '""',
+    },
+  }
+}));
+
+
+const Navbar:React.FC = () => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen: boolean = Boolean(anchorEl);
   const isMobileMenuOpen: boolean = Boolean(mobileAnchorEl);
+  const dispatch = useAppDispatch();
+  const [logoutUser, {isLoading, isSuccess, error, isError}] = useLogoutUserMutation();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }
   const user = useAppSelector((state) => state.auth.user);
   const menuId = "primary-search-account-menu";
+  
+  const handleUserLogout = () => {
+      logoutUser(); 
+      handleMenuClose();
+  }
+
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(logOut());
+      navigate('/');
+    } 
+
+    if (isError) {
+      if (error && isFetchBaseQueryError(error)) {
+        const variant: VariantType = 'error';
+          enqueueSnackbar('Could not log you out', {variant})
+      }
+    }
+  }, [isLoading]);
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -35,17 +87,22 @@ const Navbar = () => {
         vertical: "top",
         horizontal: "right"
       }}
+      PaperProps={{
+        style: {
+          width: 150
+        }
+      }}
       id={menuId}
       keepMounted
       transformOrigin={{
         vertical: "top",
-        horizontal: "right"
+        horizontal: "left"
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
     >      
-    <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-    <MenuItem onClick={handleMenuClose}>Notifications</MenuItem>
+    <MenuItem href='/profile'>Profile</MenuItem>
+    <MenuItem onClick={handleUserLogout}>Log out</MenuItem>
     </Menu>
   );
 
@@ -57,6 +114,12 @@ const Navbar = () => {
 
   const handleMobileMenuClose = () => {
     setMobileAnchorEl(null);
+  }
+
+  const extractUserInitials = () => {
+    if (user) {
+      return extractFirstLetter(user.firstName).toUpperCase() + extractFirstLetter(user.lastName).toUpperCase();
+    }
   }
 
   const renderMobileMenu = (
@@ -99,42 +162,39 @@ const Navbar = () => {
       </MenuItem>
     </Menu>
   );
-
+ 
 
   return (
     <Box sx={{ flexGrow: 0 }}>
-    <AppBar elevation={1} position="static">
+    <AppBar className={classes.header} elevation={1} position="static">
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" component="div" sx={{ flexGrow: 0 }}>
         </Typography>
-          {user != null ? 
           <Box sx={{ display: {xs: "none", sm: "flex"} }}>
-            {/* <IconButton
-              size="large"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton> */}
             <IconButton
-            size="large"
-            edge="end"
-            aria-haspopup="true"
-            color="inherit"
+              className={classes.userMenuButton}
+              onClick={handleMenuOpen}
             >
-              <AccountCircle />
+              {/* <Badge
+                overlap='circular'
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right'}}
+                badgeContent={<OnlineBullet />}
+              >
+                <Avatar>
+                  {extractUserInitials()}
+                </Avatar>
+              </Badge> */}
+              <StyledBadge
+                overlap="circular"
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                variant="dot"
+              >
+                <Avatar>
+                  {extractUserInitials()}
+                </Avatar>              
+              </StyledBadge>
             </IconButton>
-          </Box> : 
-          <Box sx={{ display: {xs: "none", sm: "flex"} }}>
-            <Button 
-              className={classes.button}
-              variant="contained"
-              href="/signin"
-            >
-                Sign in
-            </Button>
-          </Box>}
+          </Box>  
           <Box sx={{display: {xs: "flex", sm: "none"}}}>
             <IconButton
               size="large"

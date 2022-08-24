@@ -24,7 +24,7 @@ export const subscriptionApi = createApi({
 
       addSubscription: builder.mutation<void, Partial<IFormState>>({
         query: (data) => ({
-          url: '/api/v1/subscription',
+          url: '/subscription',
           method: 'POST',
           credentials: 'include',
           body: data,

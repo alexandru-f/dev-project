@@ -1,14 +1,20 @@
-import { useNavigate } from "react-router-dom";
+import { Container, Grid, Typography } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
-import { selectCurrentUser } from "../../features/auth-slice";
+import useStyles from "./Dashboard.styles";
 
 
 const Dashboard = () => {
   
-
+  const user = useAppSelector((state) => state.auth.user);
+  const classes = useStyles(); 
+  
   return (
     <>
-      Dashboard
+      <Container className={classes.root}>
+        <Grid container spacing={0}>
+          Dashboard
+        </Grid>
+      </Container>
     </>
   );
 }

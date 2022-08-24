@@ -18,26 +18,35 @@ export const authApi = createApi({
       loginUser: builder.mutation<
         IJWTToken,
         ISignInData
-    >({
-      query(data) {
-        return {
-          url: '/user/login',
-          method: 'POST',
-          body: data,
-          credentials: 'include',
-        };
-      },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          await dispatch(userApi.endpoints.getCurrentUser.initiate(null));
-        } catch (error) {}
-      },
-    }),
+        >({
+          query(data) {
+            return {
+              url: '/user/login',
+              method: 'POST',
+              body: data,
+              credentials: 'include',
+            };
+          },
+          async onQueryStarted(args, { dispatch, queryFulfilled }) {
+            try {
+              await queryFulfilled;
+              await dispatch(userApi.endpoints.getCurrentUser.initiate(null));
+            } catch (error) {}
+          },
+      }),
+      logoutUser: builder.mutation<void, void>({
+        query() {
+          return {
+            url: '/user/logout',
+            credentials: 'include'
+          }
+        }
+      })
     }),
   });
 
 export const { 
+  useLogoutUserMutation,
   useLoginUserMutation,
   useSignUpUserAndCompanyMutation
 } = authApi;

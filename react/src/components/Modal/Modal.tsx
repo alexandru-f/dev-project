@@ -33,7 +33,7 @@ const Modal:React.FC<IModalProps> = ({open, handleClose, children, title, button
         >
           <CloseIcon />
         </IconButton>
-        {title && <DialogTitle sx={{pb: "1rem", pt: "0"}}>{title}</DialogTitle>}
+        {title && <DialogTitle color='text.secondary' sx={{pb: "1rem", pt: "0"}}>{title}</DialogTitle>}
       <DialogContent>
         {children()}
       </DialogContent>  

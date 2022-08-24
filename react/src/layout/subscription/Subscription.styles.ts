@@ -1,6 +1,5 @@
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { palette } from "@mui/system";
 import { theme } from "../../theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -20,7 +19,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     '&.MuiContainer-root': {
       padding: theme.spacing(6),
-      backgroundColor: "#eee",
       minHeight: "100vh",
       maxWidth: 'none'
     },

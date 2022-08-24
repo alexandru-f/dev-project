@@ -1,3 +1,4 @@
+import { ROLE } from "./IAuth";
 
 export interface ISubscriptionType {
   id: number;
@@ -25,7 +26,8 @@ export interface IUser {
   lastName: string;
   company: string;
   email: string;
-  roles: Array<string>;
+  // roles: Array<string>;
+  roles: ROLE[];
 }
 
 export interface IDecodedJwt {

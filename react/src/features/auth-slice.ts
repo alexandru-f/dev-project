@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {IDecodedJwt, IJWTToken, IUser, IUserState } from "../interface/IApi";
+import {IUser, IUserState } from "../interface/IApi";
 import { RootState } from '../app/store';
-import jwt_decode from "jwt-decode";
-import {  getUserInfoFromJwt } from '../Helpers/Helpers';
 
 
 const initialState: IUserState= {
@@ -20,7 +18,7 @@ const authSlice = createSlice({
     ) => {  
      state.user = user;
     },
-    logOut: (state) => {console.log('in logout'); return initialState;} 
+    logOut: (state) => initialState 
   },
 })
 

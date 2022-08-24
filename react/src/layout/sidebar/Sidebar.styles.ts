@@ -1,21 +1,11 @@
-import { NoEncryption } from "@mui/icons-material";
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { palette } from "@mui/system";
-import { theme } from "../../theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   item: {
     display: "flex",
     alignItems: "center",
-    marginBottom: theme.spacing(4),
-    [theme.breakpoints.up("sm")]: {
-      marginBottom: theme.spacing(3),
-      cursor: "pointer",
-      '&:hover': {
-        color: "rgb(25, 118, 210)"
-      }
-    },
+    paddingLeft: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
     },
@@ -23,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   icon: {
     marginRight: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
-      fontSize: "18px"
+      fontSize: theme.spacing(3)
     }
   },
   text: {
@@ -34,26 +24,38 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   container: {
     paddingTop: theme.spacing(2),
-    backgroundColor: theme.palette.primary.main,
+    paddingLeft: 0,
     height: "100vh",
     [theme.breakpoints.between("sm", "md")]: {
-      paddingLeft: "10px"
+      paddingLeft: theme.spacing(1)
     },
     [theme.breakpoints.up("sm")]: {
-      backgroundColor: "white",
-      color: "#555",
-      border: "1px solid #ece7e7"
+      backgroundColor: "rgb(40, 36, 61)",
+      color: "rgba(231, 227, 252, 0.87)",
     }
   },
   anchorTags: {
     textDecoration: "none",
-    color: "inherit"
+    color: "inherit",
+    marginTop: theme.spacing(1),
+    display: 'block',
+    padding: theme.spacing(1),
+    paddingLeft: 0,
+    borderRadius: '0px 100px 100px 0px',
+    transition: 'padding-left 0.25s ease-in-out 0s',
+    [theme.breakpoints.up("sm")]: {
+      '&:hover': {
+        backgroundColor: 'rgba(231, 227, 252, 0.03)'
+      }
+    },
   },
   currentItemHightlight: {
-    color: "rgb(25, 118, 210)"
+    boxShadow: 'rgb(58 53 65 / 42%) 0px 4px 8px -4px',
+    backgroundImage: 'linear-gradient(98deg, rgb(106, 205, 255), rgb(22, 177, 255) 94%)'
   },
   company: {
-    marginBottom: '24px!important'
+    marginBottom: theme.spacing(3),
+    paddingLeft: theme.spacing(3)
   }
 }));
 

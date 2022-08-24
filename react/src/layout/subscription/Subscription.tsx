@@ -1,8 +1,7 @@
 import useStyles from "./Subscription.styles";
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box';
-import { IconButton, Grid } from "@mui/material";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { Grid, Button, Typography } from "@mui/material";
 import SubscriptionsTable from "./components/SubscriptionTable/SubscriptionTable";
 import { useEffect, useState } from "react";
 import ModalContent from './components/ModalContent'
@@ -101,9 +100,13 @@ const Subscription = () => {
               </Grid>
               <Grid item xs={6}>
                 <Box sx={{justifyContent: 'flex-end'}} className={classes.boxHeader}>
-                  <IconButton color="primary" onClick={handleOpen}>
-                    <AddCircleIcon sx={{fontSize: "50px"}}/>
-                  </IconButton>
+                  <Button 
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOpen}
+                  >
+                    Add Subscription
+                  </Button>
                 </Box>
                 {openModal && <ModalContent recordToEdit={recordToEdit} open={openModal} handleClose={handleClose} classes={classes} />}
               </Grid>

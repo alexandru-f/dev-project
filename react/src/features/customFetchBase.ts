@@ -6,13 +6,12 @@ import {
 } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
 import { logOut } from './auth-slice';
-
-const baseUrl = '/api/v1/';
+import { BASE_API_URL } from '../app/constants';
 
 //Create mutex instance
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
-  baseUrl
+  baseUrl: BASE_API_URL
 });
 
 const customFetchBase: BaseQueryFn<
@@ -22,10 +21,8 @@ const customFetchBase: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
-  console.log(result);
   if ((result.error?.data as any)?.message === 'You are not logged in') {
     if (!mutex.isLocked()) {
-      console.log('in mutex refresh')
       const release = await mutex.acquire();
 
       try {
@@ -34,7 +31,6 @@ const customFetchBase: BaseQueryFn<
           api,
           extraOptions
         );
-          console.log(refreshResult);
         if (refreshResult.data) {
           // Retry the initial query
           result = await baseQuery(args, api, extraOptions);

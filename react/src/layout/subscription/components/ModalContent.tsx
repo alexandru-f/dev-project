@@ -263,7 +263,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes, 
         loading={addSubscriptionIsLoading || updateSubscriptionIsLoading}
         onClick={handleSubmit}
         loadingIndicator="Loading..."
-        variant="outlined"
+        variant="contained"
       >
         {recordToEdit === null ? "Create Subscription": "Edit Subscription"}
       </LoadingButton>
@@ -301,7 +301,7 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes, 
       open={open} 
       handleClose={handleClose} 
       children={renderFields} 
-      title={recordToEdit === null ? "Add new subscription" : "Edit Subscription"}
+      title={recordToEdit === null ? "Add a new subscription" : "Edit Subscription"}
       button={loadingButton}
     />
   );

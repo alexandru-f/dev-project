@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {CDN_PATH} from '../../app/constants';
 import { IHeadCell } from "../../interface/Itable";
 import Chip from '@mui/material/Chip';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
 import { DeleteOrModifySubscriptionType, ISubscription } from '../../interface/IApi';

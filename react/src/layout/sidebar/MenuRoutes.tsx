@@ -1,19 +1,24 @@
+import { ROLE } from "../../interface/IAuth";
+
 const routes = [
   {
-    name: "Home",
-    path: "/home",
+    name: "Dashboard",
+    path: "/app/dashboard",
+    roles: [ROLE.ADMIN, ROLE.USER]
   },
   {
-    name: "Dashboard",
-    path: "/dashboard"
+    name: "Manage",
+    path: "/app/manage",
+    roles: [ROLE.ADMIN]
   },
   {
     name: "Subscriptions",
-    path: "/subscriptions"
+    path: "/app/subscriptions",
+    roles: [ROLE.ADMIN, ROLE.USER]
   },
   {
     name: "Receipts",
-    path: "/receipts"
+    path: "/app/receipts",
+    roles: [ROLE.ADMIN, ROLE.USER]
   }];
-
   export default routes;

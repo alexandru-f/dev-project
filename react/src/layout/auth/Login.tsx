@@ -10,7 +10,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { IDecodedJwt, ISignInData} from '../../interface/IApi'
+import { ISignInData} from '../../interface/IApi'
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
@@ -19,7 +19,6 @@ import IconButton from '@mui/material/IconButton';
 import {useNavigate} from 'react-router-dom';
 import { useSnackbar, VariantType } from 'notistack';
 import { useDispatch } from 'react-redux';
-import jwt_decode from 'jwt-decode';
 import { useLoginUserMutation } from '../../features/authApi';
 import { isFetchBaseQueryError } from '../../Helpers/Helpers';
 
@@ -53,7 +52,6 @@ export default function Login() {
   const [passwordVisibility, setShowPasswordVisibility] = useState<boolean>(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
 
   /* Functions */
   const onSubmit = data => {
@@ -77,12 +75,12 @@ export default function Login() {
     event.preventDefault();
   };
 
-  const handleHomeRedirect = () => {
-    navigate("/home");
+  const handleDashboardRedirect = () => {
+    navigate("/app/dashboard");
   }
   useEffect(() => {
     if (isSuccess) {
-      handleHomeRedirect();
+      handleDashboardRedirect();
     }
     
     if (isError) {

@@ -10,7 +10,7 @@ export function isFetchBaseQueryError(
 
 export const getRefreshToken = () => {
   try {
-    return JSON.parse(sessionStorage.getItem('refreshToken') || '');
+        return JSON.parse(sessionStorage.getItem('refreshToken') || '');
   } catch (error) {
     return null;
   }
@@ -22,4 +22,8 @@ export const getAccessToken = () => {
 
 export const getUserInfoFromJwt = (jwt: string): IDecodedJwt => {
   return jwt_decode(jwt);
+}
+
+export const extractFirstLetter = (word: string) => {
+  return word.slice(0, 1);
 }

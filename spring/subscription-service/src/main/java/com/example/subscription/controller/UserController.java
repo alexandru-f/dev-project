@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -79,12 +80,10 @@ public class UserController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
             Map<String, String> tokens = jwtUtil.generateTokens(userDetails);
             //Set cookies for authentication
-            Cookie refreshCookie = cookieUtil.createCookie("refreshToken", tokens.get("refreshToken"), 4, true);
-            Cookie accessCookie = cookieUtil.createCookie("accessToken", tokens.get("accessToken"), 2, true);
-            Cookie isLoggedInCookie = cookieUtil.createCookie("loggedIn", "true", 2, false);
-            response.addCookie(refreshCookie);
-            response.addCookie(accessCookie);
-            response.addCookie(isLoggedInCookie);
+            Map<String, Cookie> authCookies = cookieUtil.getAuthCookies(tokens.get("refreshToken"), tokens.get("accessToken"));
+            response.addCookie(authCookies.get("refreshCookie"));
+            response.addCookie(authCookies.get("accessCookie"));
+            response.addCookie(authCookies.get("isLoggedInCookie"));
             Map<String, String> accessToken = new HashMap<>();
             accessToken.put("accessToken", tokens.get("accessToken"));
             return new ResponseEntity<>(accessToken, HttpStatus.OK);
@@ -105,14 +104,31 @@ public class UserController {
     @GetMapping("/token/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = cookieUtil.getCookieValue("refreshToken").orElse(null);
-        if (cookieValue != null) {
-            String accessToken = userService.generateAccessTokenFromRefreshToken(cookieValue);
-            Cookie isLoggedInCookie = cookieUtil.createCookie("loggedIn", "true", 2, false);
-            Cookie accessCookie = cookieUtil.createCookie("accessToken", accessToken, 2, true);
-            response.addCookie(isLoggedInCookie);
-            response.addCookie(accessCookie);
-            return new ResponseEntity<>(Map.of("accessToken", accessToken), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(Map.of("error", "Can't find cookies"), HttpStatus.FORBIDDEN);
+        if (cookieValue == null) return new ResponseEntity<>(Map.of("error", "Refresh token not present"), HttpStatus.FORBIDDEN);
+
+        String accessToken = userService.generateAccessTokenFromRefreshToken(cookieValue);
+        Cookie isLoggedInCookie = cookieUtil.createCookie("loggedIn", "true", 60, false);
+        Cookie accessCookie = cookieUtil.createCookie("accessToken", accessToken, 60, true);
+        response.addCookie(isLoggedInCookie);
+        response.addCookie(accessCookie);
+        return new ResponseEntity<>(Map.of("accessToken", accessToken), HttpStatus.OK);
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.logout();
+            Cookie accessCookie = cookieUtil.createCookie("accessToken", null, 0, true);
+            Cookie refreshCookie = cookieUtil.createCookie("refreshToken", null, 0, true);
+            Cookie isLoggedInCookie = cookieUtil.createCookie("loggedIn", null, 0, false);
+            response.addCookie(accessCookie);
+            response.addCookie(refreshCookie);
+            response.addCookie(isLoggedInCookie);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ServletException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

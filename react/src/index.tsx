@@ -4,20 +4,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {theme} from './theme';
-import {ThemeProvider} from '@mui/styles';
+import {ThemeProvider} from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { SnackbarProvider } from 'notistack';
 import AuthMiddleware from './Helpers/AuthMiddleware'
+import { CookiesProvider } from 'react-cookie';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={1}>
-          <AuthMiddleware>
-          <App />
-          </AuthMiddleware>
+          <CookiesProvider>
+            <AuthMiddleware>
+              <App />
+            </AuthMiddleware>
+          </CookiesProvider>
         </SnackbarProvider>
       </ThemeProvider>
     </Provider>

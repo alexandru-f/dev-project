@@ -6,6 +6,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     alignItems: "center" 
   },
+  header: {
+   backgroundColor: 'transparent',
+   boxShadow: 'none' 
+  },
   badges: {
     marginRight: theme.spacing(3)
   },
@@ -16,8 +20,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&.MuiButton-root': {
       background: '#1976d2',
       color: 'rgb(255, 255, 255)'
+    },
+    '&.MuiSvgIcon-root': {
+      fontSize: theme.spacing(3)
     }
-  }
+  },
+  userMenuButton: {
+    borderRadius: '0',
+    border: 0,
+    color: 'rgba(58, 53, 65, 0.87)',
+    '&:hover': {
+      backgroundColor: 'transparent'
+    },
+    
+  },
+
 }));
 
 export default useStyles;

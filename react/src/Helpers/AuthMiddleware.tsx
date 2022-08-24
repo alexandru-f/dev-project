@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader';
 import { userApi } from '../features/userApi';
@@ -9,11 +9,9 @@ type IAuthMiddleware = {
 
 const AuthMiddleware: React.FC<IAuthMiddleware> = ({ children }) => {
   const [cookies] = useCookies(['loggedIn']);
-
   const { isLoading } = userApi.endpoints.getCurrentUser.useQuery(null, {
     skip: !cookies.loggedIn,
   });
-
   if (isLoading) {
     return <FullScreenLoader />;
   }

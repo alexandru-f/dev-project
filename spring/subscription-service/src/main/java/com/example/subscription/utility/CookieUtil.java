@@ -7,6 +7,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.net.CookieStore;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -35,5 +37,16 @@ public class CookieUtil {
             cookie.setHttpOnly(true);
         }
         return cookie;
+    }
+
+    public Map<String, Cookie> getAuthCookies(String refreshToken, String accessToken) {
+        Cookie refreshCookie = createCookie("refreshToken", refreshToken, 43800, true);
+        Cookie accessCookie = createCookie("accessToken", accessToken, 60, true);
+        Cookie isLoggedInCookie = createCookie("loggedIn", "true", 60, false);
+        return Map.of(
+                "refreshCookie", refreshCookie,
+                "accessCookie", accessCookie,
+                "isLoggedInCookie", isLoggedInCookie
+        );
     }
 }
