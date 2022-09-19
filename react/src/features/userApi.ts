@@ -22,5 +22,22 @@ export const userApi = createApi({
         } catch (error) {console.error(error)}
       },
     }),
+    // getAllUsers: builder.query<IUser[], null>({
+    //   query() {
+    //     return {
+    //       url: '/user/getAllUsers',
+    //       credentials: 'include',
+    //     };
+    //   },
+    //   providesTags: (result) =>
+    //   result
+    //     ? [
+    //       ...result.map(({id}) => ({ type: 'User' as const, id })),
+    //       {type: 'User', id: 'LIST'}
+    //     ]
+    //     : [{type: 'User', id: 'LIST'}],
+    // }),
   }),
 });
+
+// export const {useGetAllUsersQuery} = userApi;

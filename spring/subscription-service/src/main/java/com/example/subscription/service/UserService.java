@@ -16,12 +16,11 @@ import com.example.subscription.repository.UserRepository;
 import com.example.subscription.utility.JwtUtil;
 import com.example.subscription.utility.TokensUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.security.Principal;
+import java.util.*;
 
 @Slf4j
 public class UserService {
@@ -54,6 +53,7 @@ public class UserService {
         //create membership
         createMembership(user, company);
     }
+
     public Optional<UserResponse> getUserInfo(String userEmail) {
         Optional<Membership> membershipOptional = membershipRepository.getCompleteUserInfo(userEmail);
         if (membershipOptional.isPresent()) {
@@ -79,7 +79,27 @@ public class UserService {
             } catch(Exception exception) {
                 throw new InvalidJwtException(exception.getMessage());
             }
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email.toLowerCase());
+    }
+
+    public List<User> getAllUsers() {
+        return null;
+        Principal currentUser = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Membership> userOptional = membershipRepository.getCompleteUserInfo(currentUser.getName());
+        if (userOptional.isPresent()) {
+            Membership userInfo = userOptional.get();
+
+            Optional<List<User>> users = membershipRepository.getAllUsersByCompany(userInfo.getCompany());
+
+            if (users.isPresent()) {
+                return users.get();
+            }
         }
+        return new ArrayList<>();
+    }
 
     private Company createCompany(RegisterCompanyDTO registerCompanyDTO) {
         Company company = Company.builder()
@@ -116,11 +136,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email.toLowerCase());
-    }
-
-
     private boolean isEmailAlreadyInUse(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         return user.isPresent();
@@ -131,4 +146,5 @@ public class UserService {
             throw new CompanyNameAlreadyExistsException("Company name already exists");
         }
     }
+
 }

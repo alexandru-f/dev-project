@@ -62,10 +62,9 @@ public class SubscriptionService {
                 .map(e -> {
                     long subscriptionId = e.getSubscriptionId();
                     SubscriptionInfoDTO subscriptionInfoDTO = subscriptionInfoDTOList.stream().filter(s -> s.getId() == subscriptionId).findFirst().orElse(null);
-                    if (subscriptionInfoDTO != null) {
-                        return mapperService.mapToFullSubscriptionInfoDTO(e, subscriptionInfoDTO);
-                    }
-                    return null;
+                    if (subscriptionInfoDTO == null) return null;
+
+                    return mapperService.mapToFullSubscriptionInfoDTO(e, subscriptionInfoDTO);
                 })
                 .collect(Collectors.toList());
     }

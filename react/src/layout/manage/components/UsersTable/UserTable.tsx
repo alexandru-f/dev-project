@@ -1,27 +1,26 @@
-import { useGetSubscriptionsQuery } from '../../../../features/subscriptionApi';
 import SnackBar from "../../../../components/SnackBar/SnackBar";
 import EnhancedTable from "../../../../components/Table/EnhancedTable";
 import {DeleteOrModifySubscriptionType, IHeadCell} from '../../../../interface/Itable';
-import useStyles from "./SubscriptionTable.styles";
+import useStyles from "../../../subscription/components/SubscriptionTable/SubscriptionTable.styles";
 import { ISubscription } from "../../../../interface/IApi";
-import SubscriptionTableDataList from './SubscriptionTableDataList';
+import TableDataList from '../../../subscription/components/SubscriptionTable/SubscriptionTableDataList';
+// import { useGetAllUsersQuery } from '../../../../features/userApi';
 
 interface IProps {
   filterData: string;
   openInPopup: (subscription: DeleteOrModifySubscriptionType) => void
 }
 
-const SubscriptionsTable:React.FC<IProps> = ({filterData, openInPopup}) => {
+const UserTable:React.FC<IProps> = ({filterData, openInPopup}) => {
 
   const classes = useStyles();
-  const {data = [], isLoading, isError, isSuccess} = useGetSubscriptionsQuery();
+  const {data = [], isLoading, isError, isSuccess} = useGetAllUsersQuery();
   
   const headCells:IHeadCell[] = [
-    {id: 'subscriptionName', label: 'Subscription Name'},
-    {id: 'currency', label: 'Currency'},
-    {id: 'price', label: 'Price'},
+    {id: 'userName', label: 'User'},
+    {id: 'email', label: 'Email'},
+    {id: 'role', label: 'Role'},
     {id: 'status', label: 'Status'},
-    {id: 'payingDueDate', label: 'Due Date'},
     {id: 'actions', label: 'Actions', disableSorting: true}
   ];
 
@@ -37,7 +36,7 @@ const SubscriptionsTable:React.FC<IProps> = ({filterData, openInPopup}) => {
   }
 
   const listComponent = (sortedData: ISubscription[]) => {
-      return <SubscriptionTableDataList subscriptions={sortedData} classes={classes} openInPopup={openInPopup} />
+      return <TableDataList subscriptions={sortedData} classes={classes} openInPopup={openInPopup} />
   }
 
   
@@ -55,4 +54,4 @@ const SubscriptionsTable:React.FC<IProps> = ({filterData, openInPopup}) => {
 }
 
 
-export default SubscriptionsTable;
+export default UserTable;

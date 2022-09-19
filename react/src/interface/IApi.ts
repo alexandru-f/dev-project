@@ -71,5 +71,3 @@ export interface ICompanyRegistrationData {
   password: string;
   confirmPassword: string;
 }
-
-export type DeleteOrModifySubscriptionType = ISubscription | number;

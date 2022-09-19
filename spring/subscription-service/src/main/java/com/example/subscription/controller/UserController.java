@@ -58,8 +58,8 @@ public class UserController {
     }
 
     @PostMapping("/company/signup")
-    ResponseEntity<?> signUpUser (@Valid @RequestBody RegisterCompanyDTO registerCompanyDTO,
-                                  BindingResult bindingResult) {
+    ResponseEntity<?> signUpUser(@Valid @RequestBody RegisterCompanyDTO registerCompanyDTO,
+                                 BindingResult bindingResult) {
         //Validate passwords
         userValidator.validate(registerCompanyDTO, bindingResult);
         ResponseEntity<?> errors = validateErrors.validate(bindingResult);
@@ -104,7 +104,8 @@ public class UserController {
     @GetMapping("/token/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = cookieUtil.getCookieValue("refreshToken").orElse(null);
-        if (cookieValue == null) return new ResponseEntity<>(Map.of("error", "Refresh token not present"), HttpStatus.FORBIDDEN);
+        if (cookieValue == null)
+            return new ResponseEntity<>(Map.of("error", "Refresh token not present"), HttpStatus.FORBIDDEN);
 
         String accessToken = userService.generateAccessTokenFromRefreshToken(cookieValue);
         Cookie isLoggedInCookie = cookieUtil.createCookie("loggedIn", "true", 60, false);
@@ -130,5 +131,8 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<?> getAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    }
 }

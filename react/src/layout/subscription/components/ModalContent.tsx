@@ -19,9 +19,11 @@ import AlertTitle from '@mui/material/AlertTitle';
 import { useGetAllNamesQuery } from "../../../features/subscriptionNamesApi";
 import { useAddSubscriptionMutation, useUpdateSubscriptionMutation } from "../../../features/subscriptionApi";
 import { VariantType, useSnackbar } from 'notistack';
+import globalUseStyles from "../../../Helpers/globalUseStyles";
 
-const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes, recordToEdit}) => {
+const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, recordToEdit}) => {
 
+  const globalClasses = globalUseStyles();
   const [query, setQuery] = useState<string>("");
   const [formValues, setFormValues] = useState<IFormState>(initialFormValues);
   const [errors, setErrors] = useState<IValidationObject>(initialErrorValues);
@@ -152,12 +154,12 @@ const ModalContent:React.FC<IModalContentProps> = ({open, handleClose, classes, 
                 filterOptions={(x) => x}
                 renderInput={(params) => <TextField {...errors.subscriptionName && {error: true, helperText: errors.subscriptionName}} {...params} label="Subscription Name"/>}
                 renderOption={(props, option) => (
-                  <Box key={option.id} className={classes.listItems} component="li" {...props}>
+                  <Box key={option.id} className={globalClasses.listItems} component="li" {...props}>
                     <img onError={({currentTarget}) => {
                       currentTarget.onerror = null;
                       currentTarget.src='https://cdn.icon-icons.com/icons2/1378/PNG/512/imagemissing_92832.png';
                     }} 
-                    className={classes.subsIcons} alt={option.name + " logo"} 
+                    className={globalClasses.subsIcons} alt={option.name + " logo"} 
                     src={CDN_PATH + option.path.replace('/subscriptions-images', '')} />
                     <Typography sx={{lineHeight: "28px", fontSize: "1.1rem"}} variant="caption">{option.name}</Typography>
                   </Box>

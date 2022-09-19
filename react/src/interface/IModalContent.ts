@@ -3,7 +3,6 @@ import { ISubscription } from "./IApi";
 export interface IModalContentProps {
   open: boolean;
   handleClose: () => void; 
-  classes: any;
   recordToEdit: IFormState | null;
 }
 

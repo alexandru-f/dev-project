@@ -1,31 +1,14 @@
 import { Box } from "@mui/system";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
-import {CDN_PATH} from '../../app/constants';
-import { IHeadCell } from "../../interface/Itable";
-import Chip from '@mui/material/Chip';
+import { FetchedData, IEnhancedTable, IHeadCell, ITableData} from "../../interface/Itable";
 import { useState } from "react";
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from '@mui/material/TableFooter';
-import { DeleteOrModifySubscriptionType, ISubscription } from '../../interface/IApi';
-import ShowMoreMenu from '../Menu/ShowMoreMenu';
-
-interface FetchedData {
-  data: ISubscription[];
-  isLoading: boolean;
-  isSuccess: boolean;
-}
-
-interface IEnhancedTable {
-  classes: any;
-  headCells: IHeadCell[];
-  dataObject: FetchedData;
-  openInPopup: (subscription: DeleteOrModifySubscriptionType) => void;
-}
 
 type OrderType = 'asc' | 'desc';
 
-const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject, openInPopup}) => {
+const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject, listComponent}) => {
   
   const pages = [5, 10];
   const [page, setPage] = useState<number>(0);
@@ -80,8 +63,10 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject,
   }
 
   const handlePaginationAndSorting = (data: FetchedData["data"]) => {
-    return stableSort<ISubscription>(data, getComparator(order, orderBy));
+      const sortedArr = stableSort<ITableData>(data, getComparator(order, orderBy));
+      return sortedArr.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
+
 
   return (
         <TableContainer>
@@ -112,8 +97,8 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject,
               </TableRow>
             </TableHead>
             {/* Table Body */}
-            <TableBody>
               {isLoading ? (
+                <TableBody>
                 <TableRow>
                   <TableCell colSpan={6}>
                     <Box className={classes.tableInnerContainer}>
@@ -121,49 +106,19 @@ const EnhancedTable:React.FC<IEnhancedTable> = ({classes, headCells, dataObject,
                     </Box>
                   </TableCell>  
                 </TableRow>
+                </TableBody>
               ) : 
               data ?
                 (data.length > 0 ? 
-                handlePaginationAndSorting(data)
-                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-                .map(item => {
-                 return (
-                  <TableRow key={item.id}>
-                  <TableCell>
-                    <Box className={classes.tableCell}>
-                      { <img style={{width: '30px'}} onError={({currentTarget}) => {
-                          currentTarget.onerror = null;
-                          currentTarget.src='https://res.cloudinary.com/dccseikhw/image/upload/v1648750836/subscript_dum.png';
-                        }} 
-                        className={classes.subsIcons} alt={item.subscriptionName} 
-                        src={CDN_PATH + item.path.replace('/subscriptions-images', '')} />
-                      }
-                      {item.subscriptionName}
-                    </Box>
-                  </TableCell>
-                  <TableCell>{item.currency}</TableCell>
-                  <TableCell>{item.price}</TableCell>
-                  <TableCell>{item.status === true ? 
-                    <Chip size="small" color="success" label="Active" /> : 
-                    <Chip size="small" color="error" label="Inactive" />}
-                  </TableCell>
-                  <TableCell>{new Date(item.payingDueDate).toLocaleDateString('en-US')}</TableCell>
-                  <TableCell>
-                  {<ShowMoreMenu
-                    openInPopup={openInPopup} 
-                    item={item}
-                  />}
-                  </TableCell>
-                </TableRow>
-                 );
-                })
-                : (<TableRow>
-                    <TableCell>
-                      <Box className={classes.tableInnerContainer}>No Subscriptions Found.</Box>
-                    </TableCell>
-                  </TableRow>))
+                  listComponent(handlePaginationAndSorting(data))
+                : (<TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <Box className={classes.tableInnerContainer}>No Data Found.</Box>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>))
               : null}
-            </TableBody>
             <TableFooter>
               <TableRow>
                 {data.length > 0 &&

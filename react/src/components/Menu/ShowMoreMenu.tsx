@@ -3,11 +3,12 @@ import { styled, alpha } from '@mui/material/styles';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuItem from '@mui/material/MenuItem';
-import { DeleteOrModifySubscriptionType, ISubscription } from '../../interface/IApi';
+import { ISubscription } from '../../interface/IApi';
 import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { DeleteOrModifySubscriptionType } from '../../interface/Itable';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu

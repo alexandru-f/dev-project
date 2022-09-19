@@ -1,25 +1,23 @@
-import useStyles from "./Subscription.styles";
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box';
-import { Grid, Button, Typography } from "@mui/material";
 import SubscriptionsTable from "./components/SubscriptionTable/SubscriptionTable";
 import { useEffect, useState } from "react";
 import ModalContent from './components/ModalContent'
-import Paper from '@mui/material/Paper';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
+import {Button} from '@mui/material';
 import EnhancedInput from "../../components/Input/EnhancedInput";
-import { DeleteOrModifySubscriptionType } from "../../interface/IApi";
 import { IFormState } from "../../interface/IModalContent";
 import { Currency } from '../../interface/IModalContent'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import { useDeleteSubscriptionMutation } from "../../features/subscriptionApi";
 import { useSnackbar, VariantType } from 'notistack';
+import { DeleteOrModifySubscriptionType } from "../../interface/Itable";
+import globalUseStyles from "../../Helpers/globalUseStyles";
+import TPageLayout from '../../components/TPageLayout/TPageLayout';
 
 const Subscription = () => {
 
   /* State variables */
-  const classes = useStyles();
+  const globalClasses = globalUseStyles();
   const {enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [filterData, setFilterData] = useState<string>("");
@@ -39,7 +37,6 @@ const Subscription = () => {
     setOpenModal(false); 
     setRecordToEdit(null); 
   }
-  
 
   const openInPopup = (subscriptionInfo: DeleteOrModifySubscriptionType) => {
     if (typeof subscriptionInfo !== 'number') {
@@ -62,9 +59,56 @@ const Subscription = () => {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterData(event.target.value);
   }
+
   const handleClickVariant = (variant: VariantType) => () => {
     enqueueSnackbar('This is a success message!', { variant });
   };
+  
+  const displayEnhancedInput = () => {
+    return <EnhancedInput 
+    id="search-input"
+    name="SearchInput"
+    label="Search Subscription"
+    value={filterData}
+    onChange={handleSearch}
+    sxProps={{width: '100%', maxWidth: '250px'}}
+    inputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <SearchIcon />
+        </InputAdornment>
+      ),
+    }}
+    />
+  }
+
+  const displayAddButton = () => {
+    return <Button 
+    variant="contained"
+    color="primary"
+    onClick={handleOpen}
+  >
+    Add Subscription
+  </Button>
+  }
+
+  const displayModalContent = () => {
+    return <ModalContent recordToEdit={recordToEdit} open={openModal} handleClose={handleClose} />
+  }
+
+  const displayTable = () => {
+    return <SubscriptionsTable openInPopup={openInPopup} filterData={filterData}/>
+  }
+
+  const displayConfirmDialog = () => {
+    return <ConfirmDialog 
+          deleteId={deleteId}
+          open={openDialog} 
+          onClose={handleDialogClose} 
+          title={"Are you sure you want to delete this record?"}
+          subTitle={"You can't undo this operation"}
+        />
+  }
   
   useEffect(() => {
       if (isDeleteSuccess) {
@@ -75,63 +119,15 @@ const Subscription = () => {
 
 
   return (
-    <Container className={classes.root}>
-        <Grid container spacing={0}>
-          <Grid sx={{backgroundColor: '#fff'}} item xs={12} sm={12}>
-            <Grid alignItems="center" container spacing={4}>
-              <Grid item xs={6}>
-                <Box className={classes.boxHeader}>
-                  <EnhancedInput 
-                    id="search-input"
-                    name="SearchInput"
-                    label="Search Subscription"
-                    value={filterData}
-                    onChange={handleSearch}
-                    sxProps={{width: '100%', maxWidth: '250px'}}
-                    inputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box sx={{justifyContent: 'flex-end'}} className={classes.boxHeader}>
-                  <Button 
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpen}
-                  >
-                    Add Subscription
-                  </Button>
-                </Box>
-                {openModal && <ModalContent recordToEdit={recordToEdit} open={openModal} handleClose={handleClose} classes={classes} />}
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={4}>
-              <Grid item xs={12}>
-                 <Box sx={{width: '100%'}}>
-                  <Paper>
-                    <SubscriptionsTable openInPopup={openInPopup} filterData={filterData}/>
-                  </Paper>
-                </Box>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        {openDialog && <ConfirmDialog 
-          deleteId={deleteId}
-          open={openDialog} 
-          onClose={handleDialogClose} 
-          title={"Are you sure you want to delete this record?"}
-          subTitle={"You can't undo this operation"}
-        />}
-    </Container>
+    <TPageLayout 
+      displayEnhancedInput={displayEnhancedInput}
+      displayAddButton={displayAddButton}
+      displayModalContent={displayModalContent}
+      displayTable={displayTable}
+      displayConfirmDialog={displayConfirmDialog}
+      openModal={openModal}
+      openDialog={openDialog}
+    />
   );
 }
 

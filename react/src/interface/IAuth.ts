@@ -15,7 +15,7 @@ export enum ROLE {
 
 export interface IPrivateRoute {
   component: React.ReactElement,
-  roles: Array<ROLE>
+  roles: ROLE[];
 }
 
 export type IPublicRoute = Omit<IPrivateRoute, "roles">; 
