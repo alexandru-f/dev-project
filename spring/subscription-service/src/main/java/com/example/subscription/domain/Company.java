@@ -1,9 +1,7 @@
 package com.example.subscription.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -22,16 +20,28 @@ public class Company {
 
     @Column(unique = true)
     private String name;
-    @Column(unique = true)
-    private String masterEmail;
-    private boolean isActive;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-    private List<Membership> membership;
+    @OneToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date createdAt;
+
+    @OneToMany(
+            mappedBy = "company",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<User> users;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinTable(name = "company_membership",
+            joinColumns =
+                    { @JoinColumn(name = "company_id", referencedColumnName = "id") },
+            inverseJoinColumns =
+                    { @JoinColumn(name = "membership_id", referencedColumnName = "id") })
+    private Membership membership;
 
     @PrePersist
     protected void onCreate() {

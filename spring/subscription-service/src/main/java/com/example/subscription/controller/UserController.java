@@ -1,8 +1,6 @@
 package com.example.subscription.controller;
 
 import com.example.subscription.DTO.UserResponse;
-import com.example.subscription.domain.Membership;
-import com.example.subscription.domain.User;
 import com.example.subscription.exception.BadCredentialsCustomException;
 import com.example.subscription.payload.LoginRequest;
 import com.example.subscription.security.UserDetailsServiceImpl;
@@ -133,6 +131,7 @@ public class UserController {
 
     @GetMapping("/getAllUsers")
     public ResponseEntity<?> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+//        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        return null;
     }
 }

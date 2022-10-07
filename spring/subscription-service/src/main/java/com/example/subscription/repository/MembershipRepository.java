@@ -12,10 +12,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
-    @Query("From Membership where user.email = :userEmail")
-    Optional<Membership> getCompleteUserInfo(@Param("userEmail") String userEmail);
-
-    @Query("select u from User u join")
-    Optional<List<User>> getAllUsersByCompany(@NotEmpty Company company);
 
 }

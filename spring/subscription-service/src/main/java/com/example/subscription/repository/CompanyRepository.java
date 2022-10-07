@@ -6,7 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
-    boolean existsByMasterEmailIgnoreCase(String email);
     boolean existsByNameIgnoreCase(String name);
-
 }

@@ -10,13 +10,13 @@ import com.example.subscription.domain.User;
 import com.example.subscription.exception.CompanyNameAlreadyExistsException;
 import com.example.subscription.exception.EmailAlreadyExistsException;
 import com.example.subscription.exception.InvalidJwtException;
+import com.example.subscription.interfaces.UserRegistration;
 import com.example.subscription.repository.CompanyRepository;
 import com.example.subscription.repository.MembershipRepository;
 import com.example.subscription.repository.UserRepository;
 import com.example.subscription.utility.JwtUtil;
 import com.example.subscription.utility.TokensUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.security.Principal;
@@ -44,26 +44,32 @@ public class UserService {
 
     public void manageNewSubscription(RegisterCompanyDTO registerCompanyDTO) {
 
-        //create user
-        User user = createUser(registerCompanyDTO);
-
         //create company
         Company company = createCompany(registerCompanyDTO);
 
+        //create user
+        User user = createUser(registerCompanyDTO);
+
         //create membership
-        createMembership(user, company);
+        Membership membership = createMembership();
+
+        user.setCompany(company);
+        company.setCreatedBy(user);
+        company.setMembership(membership);
+        membership.setCompany(company);
+        userRepository.save(user);
     }
 
     public Optional<UserResponse> getUserInfo(String userEmail) {
-        Optional<Membership> membershipOptional = membershipRepository.getCompleteUserInfo(userEmail);
-        if (membershipOptional.isPresent()) {
-            Membership userFullInfo = membershipOptional.get();
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        if (userOptional.isPresent()) {
+            User userFullInfo = userOptional.get();
             UserResponse userResponse = UserResponse.builder()
-                    .firstName(userFullInfo.getUser().getFirstName())
-                    .lastName(userFullInfo.getUser().getLastName())
-                    .email(userFullInfo.getUser().getEmail())
+                    .firstName(userFullInfo.getFirstName())
+                    .lastName(userFullInfo.getLastName())
+                    .email(userFullInfo.getEmail())
                     .company(userFullInfo.getCompany().getName())
-                    .roles(userFullInfo.getUser().getRoles())
+                    .roles(userFullInfo.getRoles())
                     .build();
             return Optional.of(userResponse);
         }
@@ -85,49 +91,42 @@ public class UserService {
         return userRepository.findByEmail(email.toLowerCase());
     }
 
-    public List<User> getAllUsers() {
-        return null;
-        Principal currentUser = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Membership> userOptional = membershipRepository.getCompleteUserInfo(currentUser.getName());
-        if (userOptional.isPresent()) {
-            Membership userInfo = userOptional.get();
-
-            Optional<List<User>> users = membershipRepository.getAllUsersByCompany(userInfo.getCompany());
-
-            if (users.isPresent()) {
-                return users.get();
-            }
-        }
-        return new ArrayList<>();
-    }
+//    public List<User> getAllUsers() {
+//        return null;
+////        Principal currentUser = SecurityContextHolder.getContext().getAuthentication();
+//        Optional<Membership> userOptional = membershipRepository.getCompleteUserInfo(currentUser.getName());
+//        if (userOptional.isPresent()) {
+//            Membership userInfo = userOptional.get();
+//
+//            Optional<List<User>> users = membershipRepository.getAllUsersByCompany(userInfo.getCompany());
+//
+//            if (users.isPresent()) {
+//                return users.get();
+//            }
+//        }
+//        return new ArrayList<>();
+//    }
 
     private Company createCompany(RegisterCompanyDTO registerCompanyDTO) {
         Company company = Company.builder()
                 .name(registerCompanyDTO.getCompanyName())
-                .masterEmail(registerCompanyDTO.getEmail().toLowerCase())
-                .isActive(true)
                 .build();
-
         throwIfCompanyNameAlreadyExists(company.getName());
-        return companyRepository.save(company);
+
+        return company;
     }
 
-    private void createMembership(User user, Company company) {
-        Membership membership = Membership.builder()
-                .user(user)
-                .company(company)
-                .build();
-
-        membershipRepository.save(membership);
+    private Membership createMembership() {
+        return Membership.builder().isActive(true).build();
 
     }
-    private User createUser(RegisterCompanyDTO registerCompanyDTO) {
+    private User createUser(UserRegistration registerCompanyDTO) {
         User user = User.builder()
                 .email(registerCompanyDTO.getEmail().toLowerCase())
                 .password(bCryptPasswordEncoder.encode(registerCompanyDTO.getPassword()))
                 .firstName(registerCompanyDTO.getFirstName())
                 .lastName(registerCompanyDTO.getLastName())
-                .roles(List.of(Role.ROLE_ADMINISTRATOR))
+                .roles(new ArrayList<>(List.of(Role.ROLE_ADMINISTRATOR)))
                 .build();
 
         if (isEmailAlreadyInUse(user.getEmail())) {
